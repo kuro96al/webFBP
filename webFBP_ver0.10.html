@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="library/css/joint.css" />
+    <script src="library/js/jquery.js"></script>
+    <script src="library/js/lodash.js"></script>
+    <script src="library/js/backbone.js"></script>
+    <script src="library/js/joint.js"></script>
+    <script src="library/js/bacon.js"></script>
+</head>
+<body>
+
+<button id="updown"> Push </button>
+<span id="counter">0</span>
+  <div id="myholder"></div>
+  <script type="text/javascript">
+
+    var graph = new joint.dia.Graph;
+
+    var paper = new joint.dia.Paper({
+        el: $('#myholder'),
+        width: 600,
+        height: 600,
+        model: graph,
+        gridSize: 1
+    });
+
+    //コンポーネントの定義
+
+var component = {};
+
+    component.up = new joint.shapes.devs.Model({
+      id:"up",
+    position: { x: 50, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: ['out'],
+    attrs: {
+        '.label': { text: 'up', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085' },
+        '.outPorts circle': { fill: '#E74C3C' }
+    }
+    });
+
+        component.down = new joint.shapes.devs.Model({
+      id:"down",
+    position: { x: 50, y: 200 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: ['out'],
+    attrs: {
+        '.label': { text: 'down', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085' },
+        '.outPorts circle': { fill: '#E74C3C' }
+    }
+    });
+
+    component.display= new joint.shapes.devs.Model({
+      id:"display",
+    position: { x: 300, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: ['in'],
+    outPorts: [],
+    attrs: {
+        '.label': { text: 'display', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085' },
+        '.outPorts circle': { fill: '#E74C3C' }
+    }
+});
+
+//コンポーネントスクリプト
+var compcode =[];
+
+compcode.up = function(){
+  console.log("through up");
+  return 1;
+}
+
+compcode.down = function(){
+  console.log("through down");
+  return -1;
+}
+
+
+compcode.display = function(num){
+  console.log("through display");
+  console.log($("#counter").text());
+  var sum = Number($("#counter").text()) + num;
+ $('#counter').text(sum);
+ return 0;
+
+}
+
+
+//bacon
+var updown = $("#updown").asEventStream('click');
+var dispose = [];
+compcode.plus
+    graph.addCells([component.up,component.down,component.display]);
+console.log(graph.getElements());
+graph.on('change:source change:target', function(link) {
+  if(link.getTargetElement()!=null){
+
+      console.log(link.id);
+      console.log(link.getSourceElement().id);
+      dispose[link.id] = updown.map(compcode[link.getSourceElement().id]).onValue(compcode[link.getTargetElement().id]);
+  }
+})  
+graph.on('remove link', function(link) {
+
+console.log("remove link");
+console.log(link.id);
+dispose[link.id]();
+});
+</script>
+
+</body>
+</html>
