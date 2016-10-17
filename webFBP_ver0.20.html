@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="library/css/joint.min.css" />
+    <script src="library/js/jquery.js"></script>
+    <script src="library/js/lodash.js"></script>
+    <script src="library/js/backbone.js"></script>
+    <script src="library/js/joint.min.js"></script>
+    <script src="library/js/bacon.js"></script>
+</head>
+<body>
+
+<button id="deploy"> Deploy </button>
+<span id="counter">0</span>
+  <div id="myholder"></div>
+  <script type="text/javascript">
+
+    var graph = new joint.dia.Graph;
+
+    var paper = new joint.dia.Paper({
+        el: $('#myholder'),
+        width: 900,
+        height: 900,
+        model: graph,
+        gridSize: 1,
+   defaultLink: new joint.dia.Link({
+        attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
+    }),
+    validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
+        // Prevent linking from input ports.
+        if (magnetS && magnetS.getAttribute('type') === 'input') return false;
+        // Prevent linking from output ports to input ports within one element.
+        if (cellViewS === cellViewT) return false;
+        // Prevent linking to input ports.
+        return magnetT && magnetT.getAttribute('type') === 'input';
+    },
+    validateMagnet: function(cellView, magnet) {
+        // Note that this is the default behaviour. Just showing it here for reference.
+        // Disable linking interaction for magnets marked as passive (see below `.inPorts circle`).
+        return magnet.getAttribute('magnet') !== 'passive';
+    }
+});
+
+    //コンポーネントがinを持っているか判定
+
+
+    //UUID生成
+function generateUUID(length) {
+  var s = "";
+  length = length || 32;
+  for (i = 0; i < length; i++) {
+    random = Math.random() * 16 | 0;
+    s += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+  }
+  return s;
+}
+    //groupID+UUIDからgroupIDを抽出
+    function getGroupID(id){
+       var ID = id.split("/");
+      return ID[0];
+    }
+
+    function createSourceFlow(){
+      return Bacon.interval(1000,1);
+    }
+
+  
+    //コンポーネントの定義
+
+var component = {};
+
+    component.up = new joint.shapes.devs.Model({
+     id:'up/'+ generateUUID(),//groupID+UUID
+    position: { x: 50, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: ['out'],
+    attrs: {
+        comid:'up',
+        '.label': { text: 'up', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
+
+        component.down = new joint.shapes.devs.Model({
+               id:'down/'+ generateUUID(),//groupID+UUID
+    position: { x: 50, y: 200 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: ['out'],
+    attrs: {
+        '.label': { text: 'down', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
+
+        component.multi = new joint.shapes.devs.Model({
+     id:'multi/'+ generateUUID(),//groupID+UUID
+    position: { x: 300, y: 150 },
+    size: { width: 90, height: 90 },
+    inPorts: ['in'],
+    outPorts: ['out'],
+    attrs: {
+        '.label': { text: 'multi', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
+
+    component.display= new joint.shapes.devs.Model({
+           id:'display/'+ generateUUID(),//groupID+UUID
+      comid:"display",
+    position: { x: 600, y: 150 },
+    size: { width: 90, height: 90 },
+    inPorts: ['in'],
+    outPorts: [],
+    attrs: {
+        '.label': { text: 'display', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+});
+
+//コンポーネントスクリプト
+var compcode =[];
+
+compcode.up = function(num){
+  console.log("through up");
+  return 1;
+}
+
+compcode.down = function(num){
+  console.log("through down");
+  return -1;
+}
+
+compcode.multi = function(num){
+  console.log("through down");
+  return num*2;
+}
+
+compcode.display = function(num){
+  console.log("through display");
+  console.log($("#counter").text());
+  var sum = Number($("#counter").text()) + num;
+ $('#counter').text(sum);
+ return 0;
+}
+
+
+//bacon
+var updown = $("#updown").asEventStream('click');
+var dispose = [];
+var listDFS = [];
+//DFS探索(深さ優先探索)中のセルでの処理
+var opts = [];
+//opts.inbound = 'false';
+opts.outbound = 'false';
+
+var iteratee = function(element, distance) {
+  listDFS.push(element.id);
+  console.log("distance:" + distance);
+  console.log("コンポーネントid:" + element.id);
+  };
+compcode.plus
+    graph.addCells([component.up,component.down,component.display,component.multi]);
+console.log(graph.getElements());
+graph.on('change:source change:target', function(link) {
+  if(link.getTargetElement()!=null){
+
+      console.log("リンクのid:" + link.id);
+      console.log("すべてのリンク:" + graph.getLinks());
+      console.log("接続したコンポーネントのソースid:" + link.getSourceElement().group);
+      console.log("接続したコンポーネントのターゲットid:" + link.getTargetElement().cid);
+      console.log(graph.dfs(link.getSourceElement(),iteratee,opts));
+      console.log(link.getSourceElement().getAncestors());
+      dispose[link.id] = updown.map(compcode[link.getSourceElement().cid]).onValue(compcode[link.getTargetElement().cid]);
+  }
+})  
+graph.on('remove link', function(link) {
+
+console.log("remove link");
+console.log(link.id);
+dispose[link.id]();
+});
+
+//deployボタンが押されたときの挙動
+var flow;
+$('#deploy').click(function(){
+  var cells = graph.getElements();
+  console.log(cells);
+  cells.forEach(function(cell) {
+    //源流のとき
+if (typeof cell.ports.in === "undefined") {
+    listDFS = [];
+
+    //フローをDFSで探索
+    graph.dfs(cell,iteratee,opts);
+    
+    //baconのstream作成
+        if(listDFS.length>1){
+          flow = null;
+      listDFS.forEach(function(id) {
+          if(listDFS[0]==id){
+          flow = createSourceFlow();
+          flow.map(compcode[getGroupID(id)]);
+          }else if(listDFS[listDFS.length-1]==id){
+          flow.onValue(compcode[getGroupID(id)]);
+          }else{
+            console.log(getGroupID(id));
+          flow.map(compcode[getGroupID(id)]);
+          }
+      });}
+}
+});
+});
+
+</script>
+
+</body>
+</html>
