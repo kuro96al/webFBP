@@ -209,12 +209,12 @@ if (typeof cell.ports.in === "undefined") {
       listDFS.forEach(function(id) {
           if(listDFS[0]==id){
           flow = createSourceFlow();
-          flow.map(compcode[getGroupID(id)]);
+          flow = flow.map(compcode[getGroupID(id)]);
           }else if(listDFS[listDFS.length-1]==id){
-          flow.onValue(compcode[getGroupID(id)]);
+          flow =flow.onValue(compcode[getGroupID(id)]);
           }else{
             console.log(getGroupID(id));
-          flow.map(compcode[getGroupID(id)]);
+          flow = flow.map(compcode[getGroupID(id)]);
           }
       });}
 }
