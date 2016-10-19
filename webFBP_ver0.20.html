@@ -15,6 +15,29 @@
   <div id="myholder"></div>
   <script type="text/javascript">
 
+function Queue() {
+	this.__a = new Array();
+}
+
+Queue.prototype.enqueue = function(o) {
+	this.__a.push(o);
+}
+
+Queue.prototype.dequeue = function() {
+	if( this.__a.length > 0 ) {
+		return this.__a.shift();
+	}
+	return null;
+}
+
+Queue.prototype.size = function() {
+	return this.__a.length;
+} 
+
+Queue.prototype.toString = function() {
+	return '[' + this.__a.join(',') + ']';
+}
+
     var graph = new joint.dia.Graph;
 
     var paper = new joint.dia.Paper({
@@ -164,73 +187,105 @@ compcode.display = function(num){
 //bacon
 var updown = $("#updown").asEventStream('click');
 var dispose = [];
-var listDFS = [];
-//DFS探索(深さ優先探索)中のセルでの処理
-var opts = [];
-//opts.inbound = 'false';
-opts.outbound = 'false';
+//list[深さ][]
+var listcell = [];
 
-var iteratee = function(element, distance) {
-  listDFS.push(element.id);
-  console.log("distance:" + distance);
-  console.log("コンポーネントid:" + element.id);
-  };
-
-console.log(graph.getElements());
-graph.on('change:source change:target', function(link) {
-  if(link.getTargetElement()!=null){
-
-      console.log("リンクのid:" + link.id);
-      console.log("すべてのリンク:" + graph.getLinks());
-      console.log("接続したコンポーネントのソースid:" + link.getSourceElement().group);
-      console.log("接続したコンポーネントのターゲットid:" + link.getTargetElement().cid);
-      console.log(graph.dfs(link.getSourceElement(),iteratee,opts));
-      console.log(link.getSourceElement().getAncestors());
-      dispose[link.id] = updown.map(compcode[link.getSourceElement().cid]).onValue(compcode[link.getTargetElement().cid]);
-  }
-})  
-
-//deployボタンが押されたときの挙動
-var flow = null;
-var flowArray = [];
-$('#deploy').click(function(){
-  if(flow != null){
-
-    //dispose flow
-    console.log("dispose flow !")
-    flowArray.forEach(function(flow) {
-      flow();
-    });
-  }
-  var cells = graph.getElements();
-  console.log(cells);
-  cells.forEach(function(cell) {
-    //源流のとき
-if (typeof cell.ports.in === "undefined") {
-    listDFS = [];
-
-    //フローをDFSで探索
-    graph.dfs(cell,iteratee,opts);
-    
-    //baconのstream作成
-        if(listDFS.length>1){
-          //flow = null;
-      listDFS.forEach(function(id) {
-          if(listDFS[0]==id){
-          flow = createSourceFlow();
-          flow = flow.map(compcode[getGroupID(id)]);
-          }else if(listDFS[listDFS.length-1]==id){
-          flow =flow.onValue(compcode[getGroupID(id)]);
-          }else{
-            console.log(getGroupID(id));
-          flow = flow.map(compcode[getGroupID(id)]);
-          }
-      }
-      );
-  flowArray.push(flow);
-      }
+for (var i = 0; i < 10; i++){
+	listcell[i] = new Array(0);	//0～9
 }
+
+var linkopts = [];
+linkopts.inbound = true;
+linkopts.outbound = false;
+
+  var allInConnectedElementList = [];
+//deployボタンが押されたときの挙動
+$('#deploy').click(function(){
+
+  var unconnectedElementQueue = new Queue();
+  var uncheckedElementList = graph.getElements();
+
+   Object.keys(allInConnectedElementList).forEach(function (elementID) {
+   	if(typeof allInConnectedElementList[elementID] === 'function'){
+   		allInConnectedElementList[elementID]();
+   	}
+   });
+  uncheckedElementList.forEach(function(element) {
+    //源流のとき
+if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
+    
+    allInConnectedElementList[element.id] = createSourceFlow().map(compcode[getGroupID(element.id)]);
+    console.log(graph.getConnectedLinks(element));
+      //それ以外
+}else{
+  unconnectedElementQueue.enqueue(element);
+}
+
+  
 });
+var element;
+while( element = unconnectedElementQueue.dequeue()){
+  var links = graph.getConnectedLinks(element,linkopts);
+  console.log(element.id);
+  //inで接続されている数がひとつの場合
+  if(links.length == 1){
+    var connectedElement = false;
+  links.forEach(function(link){
+    Object.keys(allInConnectedElementList).forEach(function (elementID) {
+    if(link.getSourceElement().id == elementID){
+      if (typeof element.ports.out === "undefined") {
+        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[getGroupID(element.id)]);
+        connectedElement = true;
+      }else{
+        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[getGroupID(element.id)]);
+        connectedElement = true;
+      }
+    }
+    });
+  });
+  if(!connectedElement){
+    unconnectedElementQueue.enqueue(element);
+  }
+
+   //inで接続されている数が複数の場合
+  }else if(links.length > 1){
+    var connectPermission = false;
+    var connectCounter = 0;
+    links.forEach(function(link){
+   Object.keys(allInConnectedElementList).forEach(function (elementID) {
+    if(link.getSourceElement().id == elementID){
+    connectCounter++;
+    }
+    });
+    if(connectCounter == links.length){
+      connectPermission = true;
+    }
+  });
+
+  //merge可能
+  if(connectPermission){
+    var mergeFlow = null;
+ links.forEach(function(link){
+   Object.keys(allInConnectedElementList).forEach(function (elementID) {
+    if(link.getSourceElement().id == elementID){
+      if(mergeFlow == null){
+      mergeFlow = allInConnectedElementList[elementID];
+      }else{
+      mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
+      }
+    }
+    });
+  });
+     if (typeof element.ports.out === "undefined") {
+       allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[getGroupID(element.id)]);
+     }else{
+   allInConnectedElementList[element.id] = mergeFlow.map(compcode[getGroupID(element.id)]);
+     }
+  }else{
+    unconnectedElementQueue.enqueue(element);
+  }
+  }
+}
 });
 
 </script>
