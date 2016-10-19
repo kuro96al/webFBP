@@ -100,7 +100,7 @@ var component = {};
 
         component.multi = new joint.shapes.devs.Model({
      id:'multi/'+ generateUUID(),//groupID+UUID
-    position: { x: 300, y: 150 },
+    position: { x: 300, y: 50 },
     size: { width: 90, height: 90 },
     inPorts: ['in'],
     outPorts: ['out'],
@@ -127,6 +127,13 @@ var component = {};
     }
 });
 
+//クローンの生成とid付加（たぶんパレットを使うときに使う）
+multi = component.multi.clone();
+multi.translate(0, 150);
+multi.set('id', getGroupID(component.multi.id) + "/" + generateUUID());
+
+ graph.addCells([component.up,component.down,component.display,component.multi,multi]);
+
 //コンポーネントスクリプト
 var compcode =[];
 
@@ -141,7 +148,7 @@ compcode.down = function(num){
 }
 
 compcode.multi = function(num){
-  console.log("through down");
+  console.log("through multi");
   return num*2;
 }
 
@@ -168,8 +175,7 @@ var iteratee = function(element, distance) {
   console.log("distance:" + distance);
   console.log("コンポーネントid:" + element.id);
   };
-compcode.plus
-    graph.addCells([component.up,component.down,component.display,component.multi]);
+
 console.log(graph.getElements());
 graph.on('change:source change:target', function(link) {
   if(link.getTargetElement()!=null){
@@ -183,16 +189,19 @@ graph.on('change:source change:target', function(link) {
       dispose[link.id] = updown.map(compcode[link.getSourceElement().cid]).onValue(compcode[link.getTargetElement().cid]);
   }
 })  
-graph.on('remove link', function(link) {
-
-console.log("remove link");
-console.log(link.id);
-dispose[link.id]();
-});
 
 //deployボタンが押されたときの挙動
-var flow;
+var flow = null;
+var flowArray = [];
 $('#deploy').click(function(){
+  if(flow != null){
+
+    //dispose flow
+    console.log("dispose flow !")
+    flowArray.forEach(function(flow) {
+      flow();
+    });
+  }
   var cells = graph.getElements();
   console.log(cells);
   cells.forEach(function(cell) {
@@ -205,7 +214,7 @@ if (typeof cell.ports.in === "undefined") {
     
     //baconのstream作成
         if(listDFS.length>1){
-          flow = null;
+          //flow = null;
       listDFS.forEach(function(id) {
           if(listDFS[0]==id){
           flow = createSourceFlow();
@@ -216,7 +225,10 @@ if (typeof cell.ports.in === "undefined") {
             console.log(getGroupID(id));
           flow = flow.map(compcode[getGroupID(id)]);
           }
-      });}
+      }
+      );
+  flowArray.push(flow);
+      }
 }
 });
 });
