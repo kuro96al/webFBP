@@ -2,19 +2,96 @@
 <html>
 <head>
     <link rel="stylesheet" href="library/css/joint.min.css" />
+    <link rel="stylesheet" href="library/jquery-ui-1.12.1.custom/jquery-ui.css" />
     <script src="library/js/jquery.js"></script>
     <script src="library/js/lodash.js"></script>
     <script src="library/js/backbone.js"></script>
     <script src="library/js/joint.min.js"></script>
     <script src="library/js/bacon.js"></script>
+    <script src="library/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+
+    <style>
+
+  #droppable { width: 900px; height: 900px; padding: 0.5em; float: left; margin: 10px;　}
+  .draggableComponent { width: 80px; height: 80px; padding: 0.5em; float: left; margin: 10px 10px 10px 0;}
+  </style>
+
 </head>
 <body>
 
+ 
+<div id="accordion">
+  <h3>Section 1</h3>
+  <div>
+
+<div id="up" class="ui-state-default draggableComponent">
+  <p>up</p>
+</div>
+
+<div id="down" class="ui-state-default draggableComponent">
+  <p>down</p>
+</div>
+
+
+<div id="multi" class="ui-state-default draggableComponent">
+  <p>multi</p>
+</div>
+
+
+<div id="display" class="ui-state-default draggableComponent">
+  <p>display</p>
+</div>
+
+  </div>
+  <h3>Section 2</h3>
+  <div>
+    <p>
+    Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet
+    purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor
+    velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In
+    suscipit faucibus urna.
+    </p>
+  </div>
+  <h3>Section 3</h3>
+  <div>
+    <p>
+    Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.
+    Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero
+    ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis
+    lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui.
+    </p>
+    <ul>
+      <li>List item one</li>
+      <li>List item two</li>
+      <li>List item three</li>
+    </ul>
+  </div>
+  <h3>Section 4</h3>
+  <div>
+    <p>
+    Cras dictum. Pellentesque habitant morbi tristique senectus et netus
+    et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in
+    faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia
+    mauris vel est.
+    </p>
+    <p>
+    Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus.
+    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
+    inceptos himenaeos.
+    </p>
+  </div>
+</div>
+ 
+  <p>Editor</p>
 <button id="deploy"> Deploy </button>
 <span id="counter">0</span>
+<div id="droppable" class="ui-widget-header">
   <div id="myholder"></div>
+
+  </div>
   <script type="text/javascript">
 
+//queue
 function Queue() {
 	this.__a = new Array();
 }
@@ -38,6 +115,7 @@ Queue.prototype.toString = function() {
 	return '[' + this.__a.join(',') + ']';
 }
 
+//joinjs開始
     var graph = new joint.dia.Graph;
 
     var paper = new joint.dia.Paper({
@@ -318,6 +396,43 @@ while( element = unconnectedElementQueue.dequeue()){
 }
 });
 
+//jquery ui
+var startPosition;
+
+  $( function() {
+    $( ".draggableComponent").draggable({
+            appendTo: "body",
+            helper: "clone",
+        start: function(){
+            var finalOffset = $(this).offset();
+            startPosition = finalOffset;
+            var finalxPos = finalOffset.left;
+            var finalyPos = finalOffset.top;
+
+            console.log('Final X: ' + finalxPos);
+            console.log('Final Y: ' + finalyPos);
+        }
+});
+
+    $( "#droppable" ).droppable({
+      accept: ".draggableComponent",
+      classes: {
+        "ui-droppable-active": "ui-state-active",
+        "ui-droppable-hover": "ui-state-hover"
+      },
+      drop: function( event, ui ) {
+ var componentID  = ui.draggable.attr("id");
+var addComponent = component[componentID].clone();
+addComponent.position(ui.position.left,ui.position.top -$("#droppable").offset().top );
+addComponent.set('id', componentID + "/" + generateUUID());
+graph.addCell(addComponent);
+      }
+    });
+  } );
+
+   $( function() {
+    $( "#accordion" ).accordion();
+  } );
 </script>
 
 </body>
