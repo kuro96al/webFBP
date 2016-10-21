@@ -241,7 +241,6 @@ allElement.forEach(function(element){
 if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
     
     allInConnectedElementList[element.id] = createSourceFlow().map(compcode[getGroupID(element.id)]);
-    console.log(graph.getConnectedLinks(element));
       //それ以外
 }else{
   unconnectedElementQueue.enqueue(element);
@@ -252,7 +251,6 @@ if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).
 var element;
 while( element = unconnectedElementQueue.dequeue()){
   var links = graph.getConnectedLinks(element,linkInOpt);
-  console.log(element.id);
   //inで接続されている数がひとつの場合
   if(links.length == 1){
     var connectedElement = false;
@@ -262,9 +260,11 @@ while( element = unconnectedElementQueue.dequeue()){
       if (typeof element.ports.out === "undefined") {
         allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[getGroupID(element.id)]);
         connectedElement = true;
+        console.log(elementID + "--->" +element.id);
       }else{
         allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[getGroupID(element.id)]);
         connectedElement = true;
+        console.log(elementID + "--->" +element.id);
       }
     }
     });
@@ -296,16 +296,20 @@ while( element = unconnectedElementQueue.dequeue()){
     if(link.getSourceElement().id == elementID){
       if(mergeFlow == null){
       mergeFlow = allInConnectedElementList[elementID];
+                   console.log("merge: " + elementID)
       }else{
       mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
+             console.log("merge: " + elementID)
       }
     }
     });
   });
      if (typeof element.ports.out === "undefined") {
        allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[getGroupID(element.id)]);
+           console.log("merged flow" + "--->" +element.id);
      }else{
    allInConnectedElementList[element.id] = mergeFlow.map(compcode[getGroupID(element.id)]);
+           console.log("merged flow" + "--->" +element.id);
      }
   }else{
     unconnectedElementQueue.enqueue(element);
