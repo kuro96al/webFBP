@@ -195,6 +195,7 @@ linkOutOpt.outbound = true;
 //deployボタンが押されたときの挙動
 $('#deploy').click(function(){
 
+
 //inが接続されていないoutのlinkの削除
 var allElement = graph.getElements();
   var delLinkFin;
@@ -225,11 +226,16 @@ allElement.forEach(function(element){
   var unconnectedElementQueue = new Queue();
   var uncheckedElementList = graph.getElements();
 
+    //flowのdispose()
    Object.keys(allInConnectedElementList).forEach(function (elementID) {
    	if(typeof allInConnectedElementList[elementID] === 'function'){
    		allInConnectedElementList[elementID]();
+   		console.log("delete: " + elementID);
    	}
    });
+   allInConnectedElementList = [];
+
+   //ソースをallInConnectedElementListに入れる
   uncheckedElementList.forEach(function(element) {
     //源流のとき
 if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
