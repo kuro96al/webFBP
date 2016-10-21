@@ -197,12 +197,30 @@ $('#deploy').click(function(){
 
 //inが接続されていないoutのlinkの削除
 var allElement = graph.getElements();
+  var delLinkFin;
+do{
+  delLinkFin = true;
 allElement.forEach(function(element){
   if(typeof element.ports.in !== "undefined" && graph.getConnectedLinks(element,linkInOpt).length == 0 && graph.getConnectedLinks(element,linkOutOpt).length != 0){
     graph.removeLinks(element);
     console.log("removed links!!");
+    delLinkFin = false;
   }
 });
+}while(!delLinkFin)
+
+//outが接続されていないinのlinkの削除
+do{
+  delLinkFin = true;
+allElement.forEach(function(element){
+  if(typeof element.ports.out !== "undefined" && graph.getConnectedLinks(element,linkInOpt).length != 0 && graph.getConnectedLinks(element,linkOutOpt).length == 0){
+    graph.removeLinks(element);
+    console.log("removed links!!");
+    delLinkFin = false;
+  }
+});
+}while(!delLinkFin)
+
 
   var unconnectedElementQueue = new Queue();
   var uncheckedElementList = graph.getElements();
