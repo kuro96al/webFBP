@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="library/css/joint.min.css" />
+    <script src="library/js/jquery.js"></script>
+    <script src="library/js/lodash.js"></script>
+    <script src="library/js/backbone.js"></script>
+    <script src="library/js/joint.min.js"></script>
+    <script src="library/js/bacon.js"></script>
+</head>
+<body>
+
+<button id="deploy"> Deploy </button>
+<span id="counter">0</span>
+  <div id="myholder"></div>
+  <script type="text/javascript">
+
+function Queue() {
+	this.__a = new Array();
+}
+
+Queue.prototype.enqueue = function(o) {
+	this.__a.push(o);
+}
+
+Queue.prototype.dequeue = function() {
+	if( this.__a.length > 0 ) {
+		return this.__a.shift();
+	}
+	return null;
+}
+
+Queue.prototype.size = function() {
+	return this.__a.length;
+} 
+
+Queue.prototype.toString = function() {
+	return '[' + this.__a.join(',') + ']';
+}
+
+    var graph = new joint.dia.Graph;
+
+    var paper = new joint.dia.Paper({
+        el: $('#myholder'),
+        width: 900,
+        height: 900,
+        model: graph,
+        gridSize: 1,
+   defaultLink: new joint.dia.Link({
+        attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
+    }),
+    validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
+        // Prevent linking from input ports.
+        if (magnetS && magnetS.getAttribute('type') === 'input') return false;
+        // Prevent linking from output ports to input ports within one element.
+        if (cellViewS === cellViewT) return false;
+        // Prevent linking to input ports.
+        return magnetT && magnetT.getAttribute('type') === 'input';
+    },
+    validateMagnet: function(cellView, magnet) {
+        // Note that this is the default behaviour. Just showing it here for reference.
+        // Disable linking interaction for magnets marked as passive (see below `.inPorts circle`).
+        return magnet.getAttribute('magnet') !== 'passive';
+    }
+});
+
+    //コンポーネントがinを持っているか判定
+
+
+    //UUID生成
+function generateUUID(length) {
+  var s = "";
+  length = length || 32;
+  for (i = 0; i < length; i++) {
+    random = Math.random() * 16 | 0;
+    s += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+  }
+  return s;
+}
+    //groupID+UUIDからgroupIDを抽出
+    function getGroupID(id){
+       var ID = id.split("/");
+      return ID[0];
+    }
+
+    function createSourceFlow(){
+      return Bacon.interval(1000,1);
+    }
+
+  
+    //コンポーネントの定義
+
+var component = {};
+
+    component.up = new joint.shapes.devs.Model({
+     id:'up/'+ generateUUID(),//groupID+UUID
+    position: { x: 50, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: ['out'],
+    attrs: {
+        comid:'up',
+        '.label': { text: 'up', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
+
+        component.down = new joint.shapes.devs.Model({
+               id:'down/'+ generateUUID(),//groupID+UUID
+    position: { x: 50, y: 200 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: ['out'],
+    attrs: {
+        '.label': { text: 'down', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
+
+        component.multi = new joint.shapes.devs.Model({
+     id:'multi/'+ generateUUID(),//groupID+UUID
+    position: { x: 300, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: ['in'],
+    outPorts: ['out'],
+    attrs: {
+        '.label': { text: 'multi', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
+
+    component.display= new joint.shapes.devs.Model({
+           id:'display/'+ generateUUID(),//groupID+UUID
+      comid:"display",
+    position: { x: 600, y: 150 },
+    size: { width: 90, height: 90 },
+    inPorts: ['in'],
+    outPorts: [],
+    attrs: {
+        '.label': { text: 'display', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+});
+
+//クローンの生成とid付加（たぶんパレットを使うときに使う）
+multi = component.multi.clone();
+multi.translate(0, 150);
+multi.set('id', getGroupID(component.multi.id) + "/" + generateUUID());
+
+ graph.addCells([component.up,component.down,component.display,component.multi,multi]);
+
+//コンポーネントスクリプト
+var compcode =[];
+
+compcode.up = function(num){
+  console.log("through up");
+  return 1;
+}
+
+compcode.down = function(num){
+  console.log("through down");
+  return -1;
+}
+
+compcode.multi = function(num){
+  console.log("through multi");
+  return num*2;
+}
+
+compcode.display = function(num){
+  console.log("through display");
+  console.log($("#counter").text());
+  var sum = Number($("#counter").text()) + num;
+ $('#counter').text(sum);
+ return 0;
+}
+
+
+
+
+var linkInOpt = [];
+var linkOutOpt = [];
+linkInOpt.inbound = true;
+linkOutOpt.outbound = true;
+
+  var allInConnectedElementList = [];
+//deployボタンが押されたときの挙動
+$('#deploy').click(function(){
+
+//inが接続されていないoutのlinkの削除
+var allElement = graph.getElements();
+  var delLinkFin;
+do{
+  delLinkFin = true;
+allElement.forEach(function(element){
+  if(typeof element.ports.in !== "undefined" && graph.getConnectedLinks(element,linkInOpt).length == 0 && graph.getConnectedLinks(element,linkOutOpt).length != 0){
+    graph.removeLinks(element);
+    console.log("removed links!!");
+    delLinkFin = false;
+  }
+});
+}while(!delLinkFin)
+
+//outが接続されていないinのlinkの削除
+do{
+  delLinkFin = true;
+allElement.forEach(function(element){
+  if(typeof element.ports.out !== "undefined" && graph.getConnectedLinks(element,linkInOpt).length != 0 && graph.getConnectedLinks(element,linkOutOpt).length == 0){
+    graph.removeLinks(element);
+    console.log("removed links!!");
+    delLinkFin = false;
+  }
+});
+}while(!delLinkFin)
+
+
+  var unconnectedElementQueue = new Queue();
+  var uncheckedElementList = graph.getElements();
+
+   Object.keys(allInConnectedElementList).forEach(function (elementID) {
+   	if(typeof allInConnectedElementList[elementID] === 'function'){
+   		allInConnectedElementList[elementID]();
+   	}
+   });
+  uncheckedElementList.forEach(function(element) {
+    //源流のとき
+if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
+    
+    allInConnectedElementList[element.id] = createSourceFlow().map(compcode[getGroupID(element.id)]);
+    console.log(graph.getConnectedLinks(element));
+      //それ以外
+}else{
+  unconnectedElementQueue.enqueue(element);
+}
+
+  
+});
+var element;
+while( element = unconnectedElementQueue.dequeue()){
+  var links = graph.getConnectedLinks(element,linkInOpt);
+  console.log(element.id);
+  //inで接続されている数がひとつの場合
+  if(links.length == 1){
+    var connectedElement = false;
+  links.forEach(function(link){
+    Object.keys(allInConnectedElementList).forEach(function (elementID) {
+    if(link.getSourceElement().id == elementID){
+      if (typeof element.ports.out === "undefined") {
+        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[getGroupID(element.id)]);
+        connectedElement = true;
+      }else{
+        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[getGroupID(element.id)]);
+        connectedElement = true;
+      }
+    }
+    });
+  });
+  if(!connectedElement){
+    unconnectedElementQueue.enqueue(element);
+  }
+
+   //inで接続されている数が複数の場合
+  }else if(links.length > 1){
+    var connectPermission = false;
+    var connectCounter = 0;
+    links.forEach(function(link){
+   Object.keys(allInConnectedElementList).forEach(function (elementID) {
+    if(link.getSourceElement().id == elementID){
+    connectCounter++;
+    }
+    });
+    if(connectCounter == links.length){
+      connectPermission = true;
+    }
+  });
+
+  //merge可能
+  if(connectPermission){
+    var mergeFlow = null;
+ links.forEach(function(link){
+   Object.keys(allInConnectedElementList).forEach(function (elementID) {
+    if(link.getSourceElement().id == elementID){
+      if(mergeFlow == null){
+      mergeFlow = allInConnectedElementList[elementID];
+      }else{
+      mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
+      }
+    }
+    });
+  });
+     if (typeof element.ports.out === "undefined") {
+       allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[getGroupID(element.id)]);
+     }else{
+   allInConnectedElementList[element.id] = mergeFlow.map(compcode[getGroupID(element.id)]);
+     }
+  }else{
+    unconnectedElementQueue.enqueue(element);
+  }
+  }
+}
+});
+
+</script>
+
+</body>
+</html>

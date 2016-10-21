@@ -74,12 +74,12 @@ var component = {};
 //コンポーネントスクリプト
 var compcode =[];
 
-compcode.up = function(){
+compcode.up = function(num){
   console.log("through up");
   return 1;
 }
 
-compcode.down = function(){
+compcode.down = function(num){
   console.log("through down");
   return -1;
 }
@@ -96,7 +96,7 @@ compcode.display = function(num){
 
 
 //bacon
-var updown = $("#updown").asEventStream('click');
+var triger = Bacon.interval(1000,1);
 var dispose = [];
 compcode.plus
     graph.addCells([component.up,component.down,component.display]);
