@@ -12,82 +12,56 @@
 
     <style>
 
-  #droppable { width: 900px; height: 900px; padding: 0.5em; float: left; margin: 10px;　}
-  .draggableComponent { width: 80px; height: 80px; padding: 0.5em; float: left; margin: 10px 10px 10px 0;}
+  #droppable {height: 1000px; width: 1000px;padding: 0.5em; float: left; margin: 10px;　}
+  .draggableComponent { width: 80px; height: 20px; padding: 0.5em; float: left; margin: 10px 30px 10px 0;}
+    #accordion-resizer {
+    padding: 10px;
+    width: 200px;
+    height: 600px;
+  } 
+  ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 10px; }
   </style>
 
 </head>
 <body>
 
- 
+ <div style="float:left;">
+ <div id="accordion-resizer" class="ui-widget-content">
 <div id="accordion">
-  <h3>Section 1</h3>
+  <h3>Test Component</h3>
   <div>
 
-<div id="up" class="ui-state-default draggableComponent">
-  <p>up</p>
-</div>
-
-<div id="down" class="ui-state-default draggableComponent">
-  <p>down</p>
-</div>
-
-
-<div id="multi" class="ui-state-default draggableComponent">
-  <p>multi</p>
-</div>
-
-
-<div id="display" class="ui-state-default draggableComponent">
-  <p>display</p>
-</div>
-
+<ul id="sortable">
+ <li id="up" class="ui-state-default draggableComponent" title="1秒ごとに1を出力する">up</li>
+ <li id="down" class="ui-state-default draggableComponent" title="1秒ごとに-1を出力する">down</li>
+ <li id="multi" class="ui-state-default draggableComponent" title="入力に対して2をかけて出力する">multi</li>
+ <li id="display" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">display</li>
+</ul>
   </div>
-  <h3>Section 2</h3>
+  <h3>Sensor Component</h3>
   <div>
-    <p>
-    Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet
-    purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor
-    velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In
-    suscipit faucibus urna.
-    </p>
   </div>
   <h3>Section 3</h3>
   <div>
-    <p>
-    Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.
-    Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero
-    ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis
-    lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui.
-    </p>
-    <ul>
-      <li>List item one</li>
-      <li>List item two</li>
-      <li>List item three</li>
-    </ul>
   </div>
   <h3>Section 4</h3>
   <div>
-    <p>
-    Cras dictum. Pellentesque habitant morbi tristique senectus et netus
-    et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in
-    faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia
-    mauris vel est.
-    </p>
-    <p>
-    Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus.
-    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
-    inceptos himenaeos.
-    </p>
   </div>
 </div>
- 
-  <p>Editor</p>
+ </div>
+ </div>
+
+ <div style="float:left;">
+
+
+  <p>
 <button id="deploy"> Deploy </button>
 <span id="counter">0</span>
+</p>
 <div id="droppable" class="ui-widget-header">
-  <div id="myholder"></div>
-
+Editor
+  <div id="myholder" style="height:100%;width:100%; overflow-y: auto; overflow-x: auto;"></div>
+  </div>
   </div>
   <script type="text/javascript">
 
@@ -120,8 +94,8 @@ Queue.prototype.toString = function() {
 
     var paper = new joint.dia.Paper({
         el: $('#myholder'),
-        width: 900,
-        height: 900,
+ height: $('#myholder').height(),
+ width: $('#myholder').width(),
         model: graph,
         gridSize: 1,
    defaultLink: new joint.dia.Link({
@@ -414,7 +388,14 @@ var startPosition;
         }
 });
 
-    $( "#droppable" ).droppable({
+    $( "#droppable" ).resizable({
+      stop:function(event,ui){
+        var width = ui.size.width;
+        var height = ui.size.height;
+        paper.setDimensions(width,height);
+        console.log("width:" + width);
+      }
+    }).droppable({
       accept: ".draggableComponent",
       classes: {
         "ui-droppable-active": "ui-state-active",
@@ -423,16 +404,42 @@ var startPosition;
       drop: function( event, ui ) {
  var componentID  = ui.draggable.attr("id");
 var addComponent = component[componentID].clone();
-addComponent.position(ui.position.left,ui.position.top -$("#droppable").offset().top );
+addComponent.position(ui.position.left-$("#droppable").offset().left,ui.position.top -$("#droppable").offset().top );
 addComponent.set('id', componentID + "/" + generateUUID());
 graph.addCell(addComponent);
       }
     });
   } );
 
-   $( function() {
-    $( "#accordion" ).accordion();
+ $( function() {
+    $( "#accordion" ).accordion({
+      heightStyle: "fill"
+    });
+     $( "#sortable" ).sortable({
+      revert: true
+    });
+    $( "#accordion-resizer" ).resizable({
+      minHeight: 140,
+      minWidth: 200,
+      resize: function() {
+        $( "#accordion" ).accordion( "refresh" );
+      }
+    });
   } );
+
+//tooltipの生成
+ Object.keys(component).forEach(function (key) {
+    $('#'+key).tooltip({
+        position: {
+      my: 'left center',
+      at: 'right+10 center'
+    },
+      show: {
+        effect: "slideDown",
+        delay: 250
+      }
+    });
+ });
 </script>
 
 </body>
