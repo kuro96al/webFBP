@@ -10,7 +10,8 @@
 	<script src="library/js/joint.min.js"></script>
 	<script src="library/js/bacon.js"></script>
 	<script src="library/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-
+	<script src="library/ace/src-min-noconflict/ace.js"></script>
+	<script src="library/ace/src-min-noconflict/mode-xml.js"></script>
 	<style>
 		#droppable {
 			height: 500px;
@@ -30,9 +31,17 @@
 			margin: 10px 30px 10px 0;
 		}
 		
-		#accordion-resizer {
+		#accordion-resizer-component {
 			padding: 10px;
 			width: 300px;
+			height: 600px;
+			float: left;
+			display: flex;
+		}
+		
+		#accordion-resizer-option {
+			padding: 10px;
+			width: 700px;
 			height: 600px;
 			float: left;
 			display: flex;
@@ -50,6 +59,24 @@
 			clear: both;
 			content: "";
 		}
+		
+		#component-option {
+			height: 500px;
+			width: 500px;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
+		
+		#editor {
+			height: 500px;
+			width: 500px;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
 	</style>
 
 </head>
@@ -59,12 +86,12 @@
 		<ul>
 			<li><a href="#tabs-1">Flow Editor</a></li>
 			<li><a href="#tabs-2">Test Place</a></li>
-			<li><a href="#tabs-3">Aenean lacinia</a></li>
+			<li><a href="#tabs-3">Component Creator</a></li>
 		</ul>
 		<div id="tabs-1">
 			<div class="clearfix">
-				<div id="accordion-resizer" class="ui-widget-content">
-					<div id="accordion">
+				<div id="accordion-resizer-component" class="ui-widget-content">
+					<div class="accordion">
 						<h3>Test Component</h3>
 						<div>
 
@@ -98,16 +125,51 @@
 			</p>
 		</div>
 		<div id="tabs-3">
-			<p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque
-				rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per
-				conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus
-				hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
-			<p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent
-				viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit,
-				magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo.
-				Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum
-				rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+			<div class="clearfix">
+				<div id="accordion-resizer-option" class="ui-widget-content">
+					<div class="accordion">
+						<h3>Basic Settings</h3>
+						<div>
+
+							<label for="component-name">Component Name</label>
+							<input type="text" id="component-name">
+
+							<p>
+								<div class="widget">
+									<fieldset>
+										<legend>Select a Component Type: </legend>
+										<label for="in-out">IN&OUT</label>
+										<input type="radio" name="inout-type" id="in-out">
+										<label for="only-in">OnlyIN</label>
+										<input type="radio" name="inout-type" id="only-in">
+										<label for="only-out">OnlyOUT</label>
+										<input type="radio" name="inout-type" id="only-out">
+									</fieldset>
+								</div>
+							</p>
+
+						</div>
+						<h3>Advanced Settings</h3>
+						<div>
+						</div>
+						<h3>Section 3</h3>
+						<div>
+						</div>
+						<h3>Section 4</h3>
+						<div>
+						</div>
+					</div>
+				</div>
+				<div style="float:left;">
+					<fieldset>
+						<legend>Component Editor</legend>
+						<div id="editor"></div>
+						<button id="create-component" class="ui-state-default"> Create Component </button>
+					</fieldset>
+				</div>
+			</div>
 		</div>
+	</div>
 	</div>
 
 
@@ -191,6 +253,18 @@ function generateUUID(length) {
   
     //コンポーネントの定義
 
+var stationeryComponent = new joint.shapes.devs.Model({
+    position: { x: 50, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: [],
+    outPorts: [],
+    attrs: {
+        '.label': { text: 'stationery', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+        '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+    }
+    });
 var component = {};
 
     component.up = new joint.shapes.devs.Model({
@@ -200,7 +274,6 @@ var component = {};
     inPorts: [],
     outPorts: ['out'],
     attrs: {
-        comid:'up',
         '.label': { text: 'up', 'ref-x': .4, 'ref-y': .2 },
         rect: { fill: '#2ECC71' },
         '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
@@ -288,6 +361,10 @@ linkInOpt.inbound = true;
 linkOutOpt.outbound = true;
 
   var allInConnectedElementList = [];
+//Create Componentボタンが押されたときの挙動
+$('#create-component').click(function(){
+
+});
 //deployボタンが押されたときの挙動
 $('#deploy').click(function(){
 
@@ -456,7 +533,7 @@ graph.addCell(addComponent);
   } );
 
  $( function() {
-    $( "#accordion" ).accordion({
+    $( ".accordion" ).accordion({
       heightStyle: "fill"
     });
      $( "#sortable" ).sortable({
@@ -466,7 +543,7 @@ graph.addCell(addComponent);
       minHeight: 140,
       minWidth: 200,
       resize: function() {
-        $( "#accordion" ).accordion( "refresh" );
+        $( ".accordion" ).accordion( "refresh" );
       }
     });
   } );
@@ -488,6 +565,55 @@ graph.addCell(addComponent);
   $( function() {
     $( "#tabs" ).tabs();
   } );
+
+
+//option radio button
+  $( function() {
+    $( "input[type='radio']" ).checkboxradio();
+    $( "fieldset" ).controlgroup();
+  } );
+
+  //toggleの関数定義とバインドハンドラ
+     function handleName(e) {
+       console.log("component name is changed");
+       stationeryComponent.attr('.label/text',$("#component-name").val());
+              console.log($("#component-name").val());
+              stationeryComponent.set('id', $("#component-name").val() + "/" + generateUUID());
+       console.log(stationeryComponent);
+     }
+
+     function handleInOutType(e){
+       console.log("inout type is changed");
+       console.log(e.currentTarget.id);
+
+       var changeInOut = [];
+       changeInOut["in-out"] = function(){
+          stationeryComponent.set(`inPorts`,['IN']);
+          stationeryComponent.set(`outPorts`,['OUT']);
+       }
+      changeInOut["only-in"] = function(){
+          stationeryComponent.set(`inPorts`,['IN']);
+          stationeryComponent.set(`outPorts`,[]);
+       }
+      changeInOut["only-out"] = function(){
+          stationeryComponent.set(`inPorts`,[]);
+          stationeryComponent.set(`outPorts`,['OUT']);
+       }
+
+       changeInOut[e.currentTarget.id]();
+       console.log(stationeryComponent);
+
+     }
+
+ $( "#component-name").on( "change", handleName );
+  $( "[name='inout-type']").on( "change", handleInOutType );
+//Ace Editor
+   var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+    editor.insert("Something cool");
+    editor.gotoLine(1);
+    editor.resize()
 </script>
 
 </body>
