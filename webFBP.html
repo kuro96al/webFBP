@@ -95,7 +95,7 @@
 						<h3>Test Component</h3>
 						<div>
 
-							<ul id="sortable">
+							<ul class="sortable">
 								<li id="up" class="ui-state-default draggableComponent" title="1秒ごとに1を出力する">up</li>
 								<li id="down" class="ui-state-default draggableComponent" title="1秒ごとに-1を出力する">down</li>
 								<li id="multi" class="ui-state-default draggableComponent" title="入力に対して2をかけて出力する">multi</li>
@@ -105,8 +105,10 @@
 						<h3>Sensor Component</h3>
 						<div>
 						</div>
-						<h3>Section 3</h3>
+						<h3>Advanced Component</h3>
 						<div>
+							<ul id="advancedComponent" class="sortable">
+							</ul>
 						</div>
 						<h3>Section 4</h3>
 						<div>
@@ -147,7 +149,10 @@
 									</fieldset>
 								</div>
 							</p>
-
+							<fieldset>
+								<legend>preview component</legend>
+								<div id="previewPaper"></div>
+							</fieldset>
 						</div>
 						<h3>Advanced Settings</h3>
 						<div>
@@ -169,7 +174,6 @@
 				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 
 
@@ -208,6 +212,30 @@ Queue.prototype.toString = function() {
  height: $('#myholder').height(),
  width: $('#myholder').width(),
         model: graph,
+        gridSize: 1,
+   defaultLink: new joint.dia.Link({
+        attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
+    }),
+    validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
+        // Prevent linking from input ports.
+        if (magnetS && magnetS.getAttribute('type') === 'input') return false;
+        // Prevent linking from output ports to input ports within one element.
+        if (cellViewS === cellViewT) return false;
+        // Prevent linking to input ports.
+        return magnetT && magnetT.getAttribute('type') === 'input';
+    },
+    validateMagnet: function(cellView, magnet) {
+        // Note that this is the default behaviour. Just showing it here for reference.
+        // Disable linking interaction for magnets marked as passive (see below `.inPorts circle`).
+        return magnet.getAttribute('magnet') !== 'passive';
+    }
+});
+    var previewGraph = new joint.dia.Graph;
+    var previewPaper = new joint.dia.Paper({
+        el: $('#previewPaper'),
+        height: "200",
+        width: "200",
+        model: previewGraph,
         gridSize: 1,
    defaultLink: new joint.dia.Link({
         attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
@@ -323,18 +351,18 @@ var component = {};
         '.outPorts circle': { fill: '#E74C3C', type: 'output' }
     }
 });
-
+       previewGraph.addCell(stationeryComponent);
  graph.addCells([component.up,component.down,component.display,component.multi]);
 
 //コンポーネントスクリプト
 var compcode =[];
 
-compcode.up = function(num){
+compcode.up = function(){
   console.log("through up");
   return 1;
 }
 
-compcode.down = function(num){
+compcode.down = function(){
   console.log("through down");
   return -1;
 }
@@ -363,6 +391,18 @@ linkOutOpt.outbound = true;
   var allInConnectedElementList = [];
 //Create Componentボタンが押されたときの挙動
 $('#create-component').click(function(){
+console.log(editor.getValue());
+var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
+console.log(functionBody);
+compcode[$("#component-name").val()] = new Function ("msg", functionBody)
+component[$("#component-name").val()] = stationeryComponent;
+console.log(stationeryComponent);
+console.log(component.up);
+$("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>"+ $("#component-name").val() + "</li>");
+$( ".draggableComponent").draggable({
+            appendTo: "body",
+            helper: "clone",
+});
 
 });
 //deployボタンが押されたときの挙動
@@ -536,7 +576,7 @@ graph.addCell(addComponent);
     $( ".accordion" ).accordion({
       heightStyle: "fill"
     });
-     $( "#sortable" ).sortable({
+     $( ".sortable" ).sortable({
       revert: true
     });
     $( "#accordion-resizer" ).resizable({
@@ -579,7 +619,7 @@ graph.addCell(addComponent);
        stationeryComponent.attr('.label/text',$("#component-name").val());
               console.log($("#component-name").val());
               stationeryComponent.set('id', $("#component-name").val() + "/" + generateUUID());
-       console.log(stationeryComponent);
+       console.log(stationeryComponent); 
      }
 
      function handleInOutType(e){
@@ -588,21 +628,23 @@ graph.addCell(addComponent);
 
        var changeInOut = [];
        changeInOut["in-out"] = function(){
-          stationeryComponent.set(`inPorts`,['IN']);
-          stationeryComponent.set(`outPorts`,['OUT']);
+          stationeryComponent.set(`inPorts`,['in']);
+          stationeryComponent.set(`outPorts`,['out']);
+          editor.setValue("function(msg){\n\n something code..... \n\n return msg;\n}");   
        }
       changeInOut["only-in"] = function(){
-          stationeryComponent.set(`inPorts`,['IN']);
-          stationeryComponent.set(`outPorts`,[]);
+          stationeryComponent.set(`inPorts`,['in']);
+          stationeryComponent.set(`outPorts`,[]); 
+         editor.setValue("function(msg){\n\n something code..... \n\n }");   
        }
       changeInOut["only-out"] = function(){
           stationeryComponent.set(`inPorts`,[]);
-          stationeryComponent.set(`outPorts`,['OUT']);
+          stationeryComponent.set(`outPorts`,['out']);
+         editor.setValue("function(){\n\n something code..... \n\n return msg;\n}");   
        }
 
        changeInOut[e.currentTarget.id]();
        console.log(stationeryComponent);
-
      }
 
  $( "#component-name").on( "change", handleName );
@@ -613,7 +655,7 @@ graph.addCell(addComponent);
     editor.getSession().setMode("ace/mode/javascript");
     editor.insert("Something cool");
     editor.gotoLine(1);
-    editor.resize()
+    editor.resize();
 </script>
 
 </body>
