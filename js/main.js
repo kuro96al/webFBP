@@ -1,4 +1,4 @@
-
+ï»¿
 //queue
 function Queue() {
 	this.__a = new Array();
@@ -23,7 +23,7 @@ Queue.prototype.toString = function() {
 	return '[' + this.__a.join(',') + ']';
 }
 
-//joinjsŠJn
+//joinjsé–‹å§‹
     var graph = new joint.dia.Graph;
 
     var paper = new joint.dia.Paper({
@@ -74,10 +74,10 @@ Queue.prototype.toString = function() {
     }
 });
 
-    //ƒRƒ“ƒ|[ƒlƒ“ƒg‚ªin‚ğ‚Á‚Ä‚¢‚é‚©”»’è
+    //ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒinã‚’æŒã£ã¦ã„ã‚‹ã‹åˆ¤å®š
 
 
-    //UUID¶¬
+    //UUIDç”Ÿæˆ
 function generateUUID(length) {
   var s = "";
   length = length || 32;
@@ -87,7 +87,7 @@ function generateUUID(length) {
   }
   return s;
 }
-    //groupID+UUID‚©‚çgroupID‚ğ’Šo
+    //groupID+UUIDã‹ã‚‰groupIDã‚’æŠ½å‡º
     function getGroupID(id){
        var ID = id.split("/");
       return ID[0];
@@ -98,7 +98,12 @@ function generateUUID(length) {
     }
 
   
-    //ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì’è‹`
+    //ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®å®šç¾©
+
+    //ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆå‘¨ã‚Šã®ã‚«ãƒ©ãƒ¼è¨­å®š
+var componentColor = [];
+componentColor.label = "#111111";
+componentColor.rect = "#111111";
 
 var stationeryComponent = new joint.shapes.devs.Model({
     position: { x: 50, y: 50 },
@@ -173,7 +178,7 @@ var component = {};
        previewGraph.addCell(stationeryComponent);
  graph.addCells([component.up,component.down,component.display,component.multi]);
 
-//ƒRƒ“ƒ|[ƒlƒ“ƒgƒXƒNƒŠƒvƒg
+//ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 var compcode =[];
 
 compcode.up = function(){
@@ -208,7 +213,7 @@ linkInOpt.inbound = true;
 linkOutOpt.outbound = true;
 
   var allInConnectedElementList = [];
-//Create Componentƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Ì‹““®
+//Create Componentãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã®æŒ™å‹•
 $('#create-component').click(function(){
 console.log(editor.getValue());
 var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
@@ -217,18 +222,18 @@ compcode[$("#component-name").val()] = new Function ("msg", functionBody)
 component[$("#component-name").val()] = stationeryComponent;
 console.log(stationeryComponent);
 console.log(component.up);
-$("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1•b‚²‚Æ‚É1‚ğo—Í‚·‚é'>"+ $("#component-name").val() + "</li>");
+$("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1ç§’ã”ã¨ã«1ã‚’å‡ºåŠ›ã™ã‚‹'>"+ $("#component-name").val() + "</li>");
 $( ".draggableComponent").draggable({
             appendTo: "body",
             helper: "clone",
 });
 
 });
-//deployƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Ì‹““®
+//deployãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã®æŒ™å‹•
 $('#deploy').click(function(){
 
 
-//in‚ªÚ‘±‚³‚ê‚Ä‚¢‚È‚¢out‚Ìlink‚Ìíœ
+//inãŒæ¥ç¶šã•ã‚Œã¦ã„ãªã„outã®linkã®å‰Šé™¤
 var allElement = graph.getElements();
   var delLinkFin;
 do{
@@ -242,7 +247,7 @@ allElement.forEach(function(element){
 });
 }while(!delLinkFin)
 
-//out‚ªÚ‘±‚³‚ê‚Ä‚¢‚È‚¢in‚Ìlink‚Ìíœ
+//outãŒæ¥ç¶šã•ã‚Œã¦ã„ãªã„inã®linkã®å‰Šé™¤
 do{
   delLinkFin = true;
 allElement.forEach(function(element){
@@ -258,7 +263,7 @@ allElement.forEach(function(element){
   var unconnectedElementQueue = new Queue();
   var uncheckedElementList = graph.getElements();
 
-    //flow‚Ìdispose()
+    //flowã®dispose()
    Object.keys(allInConnectedElementList).forEach(function (elementID) {
    	if(typeof allInConnectedElementList[elementID] === 'function'){
    		allInConnectedElementList[elementID]();
@@ -267,13 +272,13 @@ allElement.forEach(function(element){
    });
    allInConnectedElementList = [];
 
-   //ƒ\[ƒX‚ğallInConnectedElementList‚É“ü‚ê‚é
+   //ã‚½ãƒ¼ã‚¹ã‚’allInConnectedElementListã«å…¥ã‚Œã‚‹
   uncheckedElementList.forEach(function(element) {
-    //Œ¹—¬‚Ì‚Æ‚«
+    //æºæµã®ã¨ã
 if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
     
     allInConnectedElementList[element.id] = createSourceFlow().map(compcode[getGroupID(element.id)]);
-      //‚»‚êˆÈŠO
+      //ãã‚Œä»¥å¤–
 }else{
   unconnectedElementQueue.enqueue(element);
 }
@@ -283,7 +288,7 @@ if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).
 var element;
 while( element = unconnectedElementQueue.dequeue()){
   var links = graph.getConnectedLinks(element,linkInOpt);
-  //in‚ÅÚ‘±‚³‚ê‚Ä‚¢‚é”‚ª‚Ğ‚Æ‚Â‚Ìê‡
+  //inã§æ¥ç¶šã•ã‚Œã¦ã„ã‚‹æ•°ãŒã²ã¨ã¤ã®å ´åˆ
   if(links.length == 1){
     var connectedElement = false;
   links.forEach(function(link){
@@ -305,7 +310,7 @@ while( element = unconnectedElementQueue.dequeue()){
     unconnectedElementQueue.enqueue(element);
   }
 
-   //in‚ÅÚ‘±‚³‚ê‚Ä‚¢‚é”‚ª•¡”‚Ìê‡
+   //inã§æ¥ç¶šã•ã‚Œã¦ã„ã‚‹æ•°ãŒè¤‡æ•°ã®å ´åˆ
   }else if(links.length > 1){
     var connectPermission = false;
     var connectCounter = 0;
@@ -320,7 +325,7 @@ while( element = unconnectedElementQueue.dequeue()){
     }
   });
 
-  //merge‰Â”\
+  //mergeå¯èƒ½
   if(connectPermission){
     var mergeFlow = null;
  links.forEach(function(link){
@@ -385,8 +390,10 @@ var startPosition;
  var componentID  = ui.draggable.attr("id");
 var addComponent = component[componentID].clone();
 addComponent.position(ui.position.left-$("#droppable").offset().left,ui.position.top -$("#droppable").offset().top );
-addComponent.set('id', componentID + "/" + generateUUID());
+var id = componentID + "/" + generateUUID();
+addComponent.set('id', id);
 graph.addCell(addComponent);
+$("g[model-id = '" + id + "']").prepend("<g id='Flash'><g fill='#FFCC00'  stroke='#D57300' stroke-width='2' ><path stroke-linecap='round' d='m 10.311873 9.0776039 9.400261 -7.988867 -0.05562 6.2501137 -2.224914 0.093987 -0.05562 5.5452134 11.402682 -0.04699 -18.522406 16.024725 0.05562 -6.015145 2.169291 -0.09398 -0.05562 -5.874165 -11.51392928 0.04699 z'/></g></g>");
       }
     });
   } );
@@ -407,7 +414,7 @@ graph.addCell(addComponent);
     });
   } );
 
-//tooltip‚Ì¶¬
+//tooltipã®ç”Ÿæˆ
  Object.keys(component).forEach(function (key) {
     $('#'+key).tooltip({
         position: {
@@ -432,7 +439,7 @@ graph.addCell(addComponent);
     $( "fieldset" ).controlgroup();
   } );
 
-  //toggle‚ÌŠÖ”’è‹`‚ÆƒoƒCƒ“ƒhƒnƒ“ƒhƒ‰
+  //toggleã®é–¢æ•°å®šç¾©ã¨ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ³ãƒ‰ãƒ©
      function handleName(e) {
        console.log("component name is changed");
        stationeryComponent.attr('.label/text',$("#component-name").val());
