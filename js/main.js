@@ -1,4 +1,4 @@
-﻿
+
 //queue
 function Queue() {
 	this.__a = new Array();
@@ -23,7 +23,120 @@ Queue.prototype.toString = function() {
 	return '[' + this.__a.join(',') + ']';
 }
 
-//joinjs開始
+//joinjs
+
+//モデルの定義
+joint.shapes.devs.ComponentModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+
+    type: 'devs.ComponentModel',
+    size: {
+      width: 80,
+      height: 80
+    },
+    attrs: {
+      rect: {
+        stroke: '#d1d1d1',
+        fill: {
+          type: 'linearGradient',
+          stops: [{
+            offset: '0%',
+            color: 'white'
+          }, {
+            offset: '50%',
+            color: '#d1d1d1'
+          }],
+          attrs: {
+            x1: '0%',
+            y1: '0%',
+            x2: '0%',
+            y2: '100%'
+          }
+        }
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'My Shape',
+        'ref-y': -20
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+//htmlの拡張
+joint.shapes.devs.ComponentModelView = joint.shapes.devs.ModelView.extend({
+
+        template: [
+            '<div class="html-element">',
+            '<button class="delete">x</button>',
+            '</div>'
+        ].join(''),
+
+        initialize: function() {
+            _.bindAll(this, 'updateBox');
+            joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+
+            this.$box = $(_.template(this.template)());
+            // Prevent paper from handling pointerdown.
+            this.$box.find('input,select').on('mousedown click', function(evt) {
+                evt.stopPropagation();
+            });
+            // This is an example of reacting on the input change and storing the input data in the cell model.
+            this.$box.find('input').on('change', _.bind(function(evt) {
+                this.model.set('input', $(evt.target).val());
+            }, this));
+            this.$box.find('select').on('change', _.bind(function(evt) {
+                this.model.set('select', $(evt.target).val());
+            }, this));
+            this.$box.find('select').val(this.model.get('select'));
+            this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
+            // Update the box position whenever the underlying model changes.
+            this.model.on('change', this.updateBox, this);
+            // Remove the box when the model gets removed from the graph.
+            this.model.on('remove', this.removeBox, this);
+
+            this.updateBox();
+        },
+        render: function() {
+            joint.dia.ElementView.prototype.render.apply(this, arguments);
+            this.paper.$el.prepend(this.$box);
+            this.updateBox();
+            return this;
+        },
+        updateBox: function() {
+            // Set the position and dimension of the box so that it covers the JointJS element.
+            var bbox = this.model.getBBox();
+            // Example of updating the HTML with a data stored in the cell model.
+            this.$box.find('label').text(this.model.get('label'));
+            this.$box.find('span').text(this.model.get('select'));
+            this.$box.css({
+                //width: bbox.width,
+                //height: bbox.height,
+                left: bbox.x+100,
+                top: bbox.y,
+                transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)'
+            });
+        },
+        removeBox: function(evt) {
+            this.$box.remove();
+        }
+    });
+
+
+//use
+
     var graph = new joint.dia.Graph;
 
     var paper = new joint.dia.Paper({
@@ -52,8 +165,8 @@ Queue.prototype.toString = function() {
     var previewGraph = new joint.dia.Graph;
     var previewPaper = new joint.dia.Paper({
         el: $('#previewPaper'),
-        height: "200",
-        width: "200",
+        height: "300",
+        width: "300",
         model: previewGraph,
         gridSize: 1,
    defaultLink: new joint.dia.Link({
@@ -105,8 +218,8 @@ var componentColor = [];
 componentColor.label = "#111111";
 componentColor.rect = "#111111";
 
-var stationeryComponent = new joint.shapes.devs.Model({
-    position: { x: 50, y: 50 },
+var stationeryComponent = new joint.shapes.devs.ComponentModel({
+    position: { x: 100, y: 100 },
     size: { width: 90, height: 90 },
     inPorts: [],
     outPorts: [],
@@ -119,7 +232,7 @@ var stationeryComponent = new joint.shapes.devs.Model({
     });
 var component = {};
 
-    component.up = new joint.shapes.devs.Model({
+    component.up = new joint.shapes.devs.ComponentModel({
      id:'up/'+ generateUUID(),//groupID+UUID
     position: { x: 50, y: 50 },
     size: { width: 90, height: 90 },
@@ -133,7 +246,7 @@ var component = {};
     }
     });
 
-        component.down = new joint.shapes.devs.Model({
+        component.down = new joint.shapes.devs.ComponentModel({
                id:'down/'+ generateUUID(),//groupID+UUID
     position: { x: 50, y: 200 },
     size: { width: 90, height: 90 },
@@ -147,7 +260,7 @@ var component = {};
     }
     });
 
-        component.multi = new joint.shapes.devs.Model({
+        component.multi = new joint.shapes.devs.ComponentModel({
      id:'multi/'+ generateUUID(),//groupID+UUID
     position: { x: 300, y: 50 },
     size: { width: 90, height: 90 },
@@ -161,7 +274,7 @@ var component = {};
     }
     });
 
-    component.display= new joint.shapes.devs.Model({
+    component.display= new joint.shapes.devs.ComponentModel({
            id:'display/'+ generateUUID(),//groupID+UUID
       comid:"display",
     position: { x: 600, y: 150 },
@@ -482,3 +595,4 @@ $("g[model-id = '" + id + "']").prepend("<g id='Flash'><g fill='#FFCC00'  stroke
     editor.insert("Something cool");
     editor.gotoLine(1);
     editor.resize();
+

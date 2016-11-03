@@ -8,11 +8,40 @@
     <script src="library/js/joint.min.js"></script>
     <script src="library/js/bacon.js"></script>
 </head>
+<style>
+.html-element {
+    position: absolute;
+    /* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
+    pointer-events: none;
+    -webkit-user-select: none;
+}
+.html-element button {
+    /* Enable interacting with inputs only. */
+    pointer-events: auto;
+}
+.html-element button.delete {
+    color: white;
+    border: none;
+    background-color: #C0392B;
+    border-radius: 20px;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: middle;
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
 <body>
 
 <button id="updown"> Push </button>
 <span id="counter">0</span>
-  <div id="myholder"></div>
+<div id="paper"></div>
   <script type="text/javascript">
 
     var graph = new joint.dia.Graph;
@@ -26,95 +55,141 @@
     });
 
     //コンポーネントの定義
-
-var component = {};
-
-    component.up = new joint.shapes.devs.Model({
-      id:"up",
-    position: { x: 50, y: 50 },
-    size: { width: 90, height: 90 },
-    inPorts: [],
-    outPorts: ['out'],
-    attrs: {
-        '.label': { text: 'up', 'ref-x': .4, 'ref-y': .2 },
-        rect: { fill: '#2ECC71' },
-        '.inPorts circle': { fill: '#16A085' },
-        '.outPorts circle': { fill: '#E74C3C' }
-    }
-    });
-
-        component.down = new joint.shapes.devs.Model({
-      id:"down",
-    position: { x: 50, y: 200 },
-    size: { width: 90, height: 90 },
-    inPorts: [],
-    outPorts: ['out'],
-    attrs: {
-        '.label': { text: 'down', 'ref-x': .4, 'ref-y': .2 },
-        rect: { fill: '#2ECC71' },
-        '.inPorts circle': { fill: '#16A085' },
-        '.outPorts circle': { fill: '#E74C3C' }
-    }
-    });
-
-    component.display= new joint.shapes.devs.Model({
-      id:"display",
-    position: { x: 300, y: 50 },
-    size: { width: 90, height: 90 },
-    inPorts: ['in'],
-    outPorts: [],
-    attrs: {
-        '.label': { text: 'display', 'ref-x': .4, 'ref-y': .2 },
-        rect: { fill: '#2ECC71' },
-        '.inPorts circle': { fill: '#16A085' },
-        '.outPorts circle': { fill: '#E74C3C' }
-    }
+var graph = new joint.dia.Graph;
+var paper = new joint.dia.Paper({
+  el: $('#paper'),
+  width: 600,
+  height: 600,
+  gridSize: 20,
+  model: graph
 });
 
-//コンポーネントスクリプト
-var compcode =[];
+joint.shapes.devs.ComponentModel = joint.shapes.devs.Model.extend({
 
-compcode.up = function(num){
-  console.log("through up");
-  return 1;
-}
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
-compcode.down = function(num){
-  console.log("through down");
-  return -1;
-}
+  defaults: joint.util.deepSupplement({
 
+    type: 'devs.MyImageModel',
+    size: {
+      width: 80,
+      height: 80
+    },
+    attrs: {
+      rect: {
+        stroke: '#d1d1d1',
+        fill: {
+          type: 'linearGradient',
+          stops: [{
+            offset: '0%',
+            color: 'white'
+          }, {
+            offset: '50%',
+            color: '#d1d1d1'
+          }],
+          attrs: {
+            x1: '0%',
+            y1: '0%',
+            x2: '0%',
+            y2: '100%'
+          }
+        }
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'My Shape',
+        'ref-y': -20
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    }
 
-compcode.display = function(num){
-  console.log("through display");
-  console.log($("#counter").text());
-  var sum = Number($("#counter").text()) + num;
- $('#counter').text(sum);
- return 0;
-
-}
-
-
-//bacon
-var triger = Bacon.interval(1000,1);
-var dispose = [];
-compcode.plus
-    graph.addCells([component.up,component.down,component.display]);
-console.log(graph.getElements());
-graph.on('change:source change:target', function(link) {
-  if(link.getTargetElement()!=null){
-
-      console.log(link.id);
-      console.log(link.getSourceElement().id);
-      dispose[link.id] = updown.map(compcode[link.getSourceElement().id]).onValue(compcode[link.getTargetElement().id]);
-  }
-})  
-graph.on('remove link', function(link) {
-
-console.log("remove link");
-console.log(link.id);
-dispose[link.id]();
+  }, joint.shapes.devs.Model.prototype.defaults)
 });
+
+joint.shapes.devs.ComponentModelView = joint.shapes.devs.ModelView.extend({
+
+        template: [
+            '<div class="html-element">',
+            '<button class="delete">x</button>',
+            '</div>'
+        ].join(''),
+
+        initialize: function() {
+            _.bindAll(this, 'updateBox');
+            joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+
+            this.$box = $(_.template(this.template)());
+            // Prevent paper from handling pointerdown.
+            this.$box.find('input,select').on('mousedown click', function(evt) {
+                evt.stopPropagation();
+            });
+            // This is an example of reacting on the input change and storing the input data in the cell model.
+            this.$box.find('input').on('change', _.bind(function(evt) {
+                this.model.set('input', $(evt.target).val());
+            }, this));
+            this.$box.find('select').on('change', _.bind(function(evt) {
+                this.model.set('select', $(evt.target).val());
+            }, this));
+            this.$box.find('select').val(this.model.get('select'));
+            this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
+            // Update the box position whenever the underlying model changes.
+            this.model.on('change', this.updateBox, this);
+            // Remove the box when the model gets removed from the graph.
+            this.model.on('remove', this.removeBox, this);
+
+            this.updateBox();
+        },
+        render: function() {
+            joint.dia.ElementView.prototype.render.apply(this, arguments);
+            this.paper.$el.prepend(this.$box);
+            this.updateBox();
+            return this;
+        },
+        updateBox: function() {
+            // Set the position and dimension of the box so that it covers the JointJS element.
+            var bbox = this.model.getBBox();
+            // Example of updating the HTML with a data stored in the cell model.
+            this.$box.find('label').text(this.model.get('label'));
+            this.$box.find('span').text(this.model.get('select'));
+            this.$box.css({
+                //width: bbox.width,
+                //height: bbox.height,
+                left: bbox.x,
+                top: bbox.y,
+                transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)'
+            });
+        },
+        removeBox: function(evt) {
+            this.$box.remove();
+        }
+    });
+
+
+// Usage:
+
+var imageModel = new joint.shapes.devs.ComponentModel({
+  position: {
+    x: 200,
+    y: 250
+  },
+  size: {
+    width: 150,
+    height: 100
+  },
+  inPorts: ['in1', 'in2'],
+  outPorts: ['out']
+});
+
+graph.addCell(imageModel);
+
+
 </script>
 
 </body>
