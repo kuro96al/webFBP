@@ -332,6 +332,11 @@ linkOutOpt.outbound = true;
 var allInConnectedElementList = [];
 //Create Componentボタンが押されたときの挙動
 $('#create-component').click(function () {
+  //エラーハンドリング
+    if($("#component-name").val() == ""){
+    $("#component_editor_log").prepend("<font color='#FF0000'><p>you should put a Component Name</p></font>");
+  }else{
+  
   console.log(editor.getValue());
   var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
   console.log(functionBody);
@@ -344,7 +349,7 @@ $('#create-component').click(function () {
     appendTo: "body",
     helper: "clone",
   });
-
+  }
 });
 //deployボタンが押されたときの挙動
 $('#deploy').click(function () {
