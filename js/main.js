@@ -38,6 +38,10 @@ joint.shapes.devs.ComponentModel = joint.shapes.devs.Model.extend({
       height: 80
     },
     attrs: {
+         '.body': {
+            'rx': 6,
+            'ry': 6
+             },
       rect: {
         stroke: '#d1d1d1',
         fill: {
@@ -286,7 +290,7 @@ component.display = new joint.shapes.devs.ComponentModel({
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
   }
 });
-previewGraph.addCell(previewComponent);
+previewGraph.addCell(previewComponent.attr({'.body': {'rx': 6,'ry': 6}}));
 graph.addCells([component.up, component.down, component.display, component.multi]);
 
 //コンポーネントスクリプト
