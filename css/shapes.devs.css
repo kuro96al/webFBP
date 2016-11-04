@@ -1,0 +1,81 @@
+.joint-theme-default text {
+    text-transform: uppercase;
+    font-weight: 800;
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+.joint-theme-default .body {
+    fill: rgba(255,255,255,0);
+    fill-opacity:"0";
+    stroke: #31d0c6;
+    stroke-width: 6px;
+}
+
+.joint-theme-default text {
+    fill: #31d0c6;
+    font-size: 16px;
+}
+
+.joint-theme-default .port-body {
+    stroke: #ffffff;
+    stroke-width: 3px;
+    fill: #7c68fc;
+}
+
+.joint-theme-default .port-body:hover {
+    opacity: 1;
+    fill: #ff7e5d;
+}
+
+.joint-theme-default .port-label {
+    fill: #7c68fc;
+    text-decoration: none;
+}
+
+.joint-theme-default .element.devs.Atomic.joint-theme-default .body {
+    stroke: #feb663;
+}
+
+.joint-theme-default .element.devs.Atomic.joint-theme-default .label {
+    fill: #feb663;
+}
+
+/* links */
+
+.joint-link .connection {
+    stroke: #4B4F6A;
+    stroke-width: 4px;
+}
+
+.devs.Link.link.joint-theme-default .marker-arrowheads .marker-arrowhead,
+.devs.Link.link.joint-theme-default .marker-vertex-group .marker-vertex,
+.devs.Link.link.joint-theme-default .marker-vertex-group .marker-vertex:hover {
+    fill: #31D0C6;
+}
+
+.devs.Link.link.joint-theme-default .marker-arrowheads .marker-arrowhead:hover {
+    fill: #F39C12;
+}
+
+.devs.Link.link.joint-theme-default .link-tools .link-tool .tool-remove circle {
+    fill: #fe854f;
+}
+
+/* highlighting */
+
+.highlighted-parent .body {
+    stroke: #fe854f;
+    transition: stroke 1s;
+}
+
+.highlighted-parent .label {
+    fill: #fe854f;
+    transition: fill 1s;
+    text-decoration: underline;
+}
+
+.joint-theme-default .joint-highlight-stroke {
+    stroke: #ff7e5d;
+    stroke-width: 6px;
+    pointer-events: none;
+}

@@ -56,19 +56,6 @@ joint.shapes.devs.ComponentModel = joint.shapes.devs.Model.extend({
             y2: '100%'
           }
         }
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'My Shape',
-        'ref-y': -20
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
       }
     }
 
