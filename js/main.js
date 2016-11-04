@@ -42,6 +42,8 @@ joint.shapes.devs.ComponentModel = joint.shapes.devs.Model.extend({
             'rx': 6,
             'ry': 6
              },
+         '.label': {
+           'ref-y': -20 },
       rect: {
         stroke: '#d1d1d1',
         fill: {
@@ -214,7 +216,7 @@ var previewComponent = new joint.shapes.devs.Model({
   inPorts: [],
   outPorts: [],
   attrs: {
-    '.label': { text: 'stationery', 'ref-x': .4, 'ref-y': .2 },
+    '.label': { text: 'stationery', 'ref-y': -20 },
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -226,7 +228,7 @@ var stationeryComponent = new joint.shapes.devs.ComponentModel({
   inPorts: [],
   outPorts: [],
   attrs: {
-    '.label': { text: 'stationery', 'ref-x': .4, 'ref-y': .2 },
+    '.label': { text: 'stationery'},
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -241,7 +243,7 @@ component.up = new joint.shapes.devs.ComponentModel({
   inPorts: [],
   outPorts: ['out'],
   attrs: {
-    '.label': { text: 'up', 'ref-x': .4, 'ref-y': .2 },
+    '.label': { text: 'up'},
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -255,7 +257,7 @@ component.down = new joint.shapes.devs.ComponentModel({
   inPorts: [],
   outPorts: ['out'],
   attrs: {
-    '.label': { text: 'down', 'ref-x': .4, 'ref-y': .2 },
+    '.label': { text: 'down'},
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -269,7 +271,7 @@ component.multi = new joint.shapes.devs.ComponentModel({
   inPorts: ['in'],
   outPorts: ['out'],
   attrs: {
-    '.label': { text: 'multi', 'ref-x': .4, 'ref-y': .2 },
+    '.label': { text: 'multi'},
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -284,7 +286,7 @@ component.display = new joint.shapes.devs.ComponentModel({
   inPorts: ['in'],
   outPorts: [],
   attrs: {
-    '.label': { text: 'display', 'ref-x': .4, 'ref-y': .2 },
+    '.label': { text: 'display'},
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
