@@ -1,0 +1,112 @@
+<html>
+
+<head>
+	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	<title>test</title>
+
+</head>
+
+<body>
+	<button id='scan'>通信開始</button>
+</body>
+<script>
+// UUIDs
+var accelerometerServiceUUID = 'f000aa80-0451-4000-b000-000000000000';
+var accelerometerDataUUID    = 'f000aa81-0451-4000-b000-000000000000';
+var accelerometerConfigUUID  = 'f000aa82-0451-4000-b000-000000000000';
+var accelerometerPeriodUUID  = 'f000aa83-0451-4000-b000-000000000000';
+
+  // turn accelerometer on
+var configData = new Uint16Array(1);
+//Turn on accel, 2G range, Disable wake on motion
+configData[0] = 0x007F;
+
+
+var periodData = new Uint8Array(1);
+periodData[0] = 0x64;
+// Variables.
+var gattServer;
+var accelerometerService;
+var accelerometer;
+
+function showInfo(info)
+{
+	console.log(info);
+}
+
+function getAccelerometerValues(data) {
+    console.log(data);
+     var a = new Int16Array(data.buffer);
+     console.log(a);
+	// Calculate accelerometer values.
+	var ax = sensorMpu9250AccConvert(a[3]);
+	var ay = sensorMpu9250AccConvert(a[4]);
+	var az = sensorMpu9250AccConvert(a[5]);
+
+	return { x: ax, y: ay, z: az };
+}
+
+ function sensorMpu9250AccConvert(data){
+        // Change  /2 to match accel range...i.e. 16 g would be /16
+        return data / (32768 / 2);
+    }
+function onAccelerometerChanged(event) {
+	var characteristic = event.target;
+	var values = getAccelerometerValues(characteristic.value);
+    console.log(characteristic);
+	showInfo('x: ' + values.x + ' y: '  + values.y + ' z: ' + values.z);
+}
+
+    $("#scan").click(function(e) {
+        console.log("pushed scan");
+    navigator.bluetooth.requestDevice({
+  filters: [{
+    namePrefix: "CC2650 SensorTag"
+  }],
+  optionalServices : [accelerometerServiceUUID]
+})
+ .then(device => {
+		console.log('Found device: ' + device.name);
+		return device.gatt.connect();
+	})
+	.then(server => {
+		gattServer = server;
+		console.log('SensorTag connected: ' + gattServer.connected);
+		return gattServer.getPrimaryService(accelerometerServiceUUID);
+	})
+	.then(service => {
+		// Get accelerometer config characteristic.
+		accelerometerService = service
+		return accelerometerService.getCharacteristic(accelerometerConfigUUID);
+	})
+	.then(characteristic => {
+		// Turn accelerometer config to ON.
+		return characteristic.writeValue(configData.buffer);
+	})
+	.then(() => {
+		// Get period characteristic.
+		return accelerometerService.getCharacteristic(accelerometerPeriodUUID);
+	})
+	.then(characteristic => {
+		// Set update interval.
+		return characteristic.writeValue(periodData.buffer);
+	})
+	.then(() => {
+		// Get data characteristic.
+		return accelerometerService.getCharacteristic(accelerometerDataUUID);
+	})
+	.then(characteristic => {
+		// Start sensor notification.
+		console.log('Start notficatons')
+		characteristic.addEventListener('characteristicvaluechanged', onAccelerometerChanged);
+  		return characteristic.startNotifications();
+	})
+  .catch(error => {
+    console.log('Argh! ' + error);
+  });
+});
+
+
+</script>
+
+</html>
