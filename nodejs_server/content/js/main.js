@@ -38,12 +38,14 @@ joint.shapes.devs.ComponentModel = joint.shapes.devs.Model.extend({
       height: 80
     },
     attrs: {
-         '.body': {
-            'rx': 6,
-            'ry': 6
-             },
-         '.label': {
-           'ref-y': -20 },
+      '.body': {
+        'rx': 6,
+        'ry': 6
+      },
+      '.label': {
+        'ref-y': -20
+      },
+      asynchronous: false,
       rect: {
         stroke: '#d1d1d1',
         fill: {
@@ -200,7 +202,7 @@ function getGroupID(id) {
 }
 
 function createSourceFlow() {
-  return Bacon.interval(1000, 1);
+  return $('#start').asEventStream('click')
 }
 
 
@@ -228,7 +230,7 @@ var stationeryComponent = new joint.shapes.devs.ComponentModel({
   inPorts: [],
   outPorts: [],
   attrs: {
-    '.label': { text: 'stationery'},
+    '.label': { text: 'stationery' },
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -243,7 +245,7 @@ component.up = new joint.shapes.devs.ComponentModel({
   inPorts: [],
   outPorts: ['out'],
   attrs: {
-    '.label': { text: 'up'},
+    '.label': { text: 'up' },
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -257,7 +259,7 @@ component.down = new joint.shapes.devs.ComponentModel({
   inPorts: [],
   outPorts: ['out'],
   attrs: {
-    '.label': { text: 'down'},
+    '.label': { text: 'down' },
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -271,7 +273,7 @@ component.multi = new joint.shapes.devs.ComponentModel({
   inPorts: ['in'],
   outPorts: ['out'],
   attrs: {
-    '.label': { text: 'multi'},
+    '.label': { text: 'multi' },
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -286,14 +288,29 @@ component.display = new joint.shapes.devs.ComponentModel({
   inPorts: ['in'],
   outPorts: [],
   attrs: {
-    '.label': { text: 'display'},
+    '.label': { text: 'display' },
     rect: { fill: '#2ECC71' },
     '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
   }
 });
-previewGraph.addCell(previewComponent.attr({'.body': {'rx': 6,'ry': 6}}));
-graph.addCells([component.up, component.down, component.display, component.multi]);
+
+component.accel = new joint.shapes.devs.ComponentModel({
+  id: 'accel/' + generateUUID(),//groupID+UUID
+  position: { x: 300, y: 50 },
+  size: { width: 90, height: 90 },
+  inPorts: [],
+  outPorts: ['out'],
+  attrs: {
+    '.label': { text: 'accel' },
+    rect: { fill: '#2ECC71' },
+    asynchronous: true,
+    '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+    '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+  }
+});
+previewGraph.addCell(previewComponent.attr({ '.body': { 'rx': 6, 'ry': 6 } }));
+graph.addCells([component.up, component.down, component.display, component.multi, component.accel]);
 
 //コンポーネントスクリプト
 var compcode = [];
@@ -310,7 +327,7 @@ compcode.down = function () {
 
 compcode.multi = function (num) {
   console.log("through multi");
-  return num * 2;
+  return  2;
 }
 
 compcode.display = function (num) {
@@ -321,6 +338,106 @@ compcode.display = function (num) {
   return 0;
 }
 
+compcode.accel = function () {
+  console.log("through accel");
+  console.log("through accel fromCallback");
+  var stream;
+  var myCharacteristic;
+  // UUIDs
+  var accelerometerServiceUUID = 'f000aa80-0451-4000-b000-000000000000';
+  var accelerometerDataUUID = 'f000aa81-0451-4000-b000-000000000000';
+  var accelerometerConfigUUID = 'f000aa82-0451-4000-b000-000000000000';
+  var accelerometerPeriodUUID = 'f000aa83-0451-4000-b000-000000000000';
+
+  // turn accelerometer on
+  var configData = new Uint16Array(1);
+  //Turn on accel, 2G range, Disable wake on motion
+  configData[0] = 0x007F;
+
+
+  var periodData = new Uint8Array(1);
+  periodData[0] = 0x64;
+  // Variables.
+  var gattServer;
+  var accelerometerService;
+  var accelerometer;
+
+  function showInfo(info) {
+    console.log(info);
+  }
+
+  function getAccelerometerValues(data) {
+    console.log(data);
+    var a = new Int16Array(data.buffer);
+    console.log(a);
+    // Calculate accelerometer values.
+    var ax = sensorMpu9250AccConvert(a[3]);
+    var ay = sensorMpu9250AccConvert(a[4]);
+    var az = sensorMpu9250AccConvert(a[5]);
+
+    return { x: ax, y: ay, z: az };
+  }
+
+  function sensorMpu9250AccConvert(data) {
+    // Change  /2 to match accel range...i.e. 16 g would be /16
+    return data / (32768 / 2);
+  }
+  var onAccelerometerChanged = function(event) {
+    var characteristic = event.target;
+    var values = getAccelerometerValues(characteristic.value);
+    console.log(characteristic);
+    showInfo('x: ' + values.x + ' y: ' + values.y + ' z: ' + values.z);
+    return values.x;
+  }
+
+  console.log("pushed scan");
+  return navigator.bluetooth.requestDevice({
+    filters: [{
+      namePrefix: "CC2650 SensorTag"
+    }],
+    optionalServices: [accelerometerServiceUUID]
+  })
+    .then(device => {
+      console.log('Found device: ' + device.name);
+      return device.gatt.connect();
+    })
+    .then(server => {
+      gattServer = server;
+      console.log('SensorTag connected: ' + gattServer.connected);
+      return gattServer.getPrimaryService(accelerometerServiceUUID);
+    })
+    .then(service => {
+      // Get accelerometer config characteristic.
+      accelerometerService = service
+      return accelerometerService.getCharacteristic(accelerometerConfigUUID);
+    })
+    .then(characteristic => {
+      // Turn accelerometer config to ON.
+      return characteristic.writeValue(configData.buffer);
+    })
+    .then(() => {
+      // Get period characteristic.
+      return accelerometerService.getCharacteristic(accelerometerPeriodUUID);
+    })
+    .then(characteristic => {
+      // Set update interval.
+      return characteristic.writeValue(periodData.buffer);
+    })
+    .then(() => {
+      // Get data characteristic.
+      return accelerometerService.getCharacteristic(accelerometerDataUUID);
+    })
+    .then(characteristic => {
+      // Start sensor notification.
+      console.log('Start notficatons')
+      myCharacteristic = characteristic;
+      characteristic.startNotifications();
+      return Bacon.fromEventTarget(myCharacteristic, 'characteristicvaluechanged').map(onAccelerometerChanged);
+    })
+    .catch(error => {
+      console.log('Argh! ' + error);
+    });
+}
 
 
 
@@ -333,22 +450,22 @@ var allInConnectedElementList = [];
 //Create Componentボタンが押されたときの挙動
 $('#create-component').click(function () {
   //エラーハンドリング
-    if($("#component-name").val() == ""){
+  if ($("#component-name").val() == "") {
     $("#component_editor_log").prepend("<font color='#FF0000'><p>you should put a Component Name</p></font>");
-  }else{
-  
-  console.log(editor.getValue());
-  var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
-  console.log(functionBody);
-  compcode[$("#component-name").val()] = new Function("msg", functionBody)
-  component[$("#component-name").val()] = stationeryComponent;
-  console.log(stationeryComponent);
-  console.log(component.up);
-  $("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
-  $(".draggableComponent").draggable({
-    appendTo: "body",
-    helper: "clone",
-  });
+  } else {
+
+    console.log(editor.getValue());
+    var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
+    console.log(functionBody);
+    compcode[$("#component-name").val()] = new Function("msg", functionBody)
+    component[$("#component-name").val()] = stationeryComponent;
+    console.log(stationeryComponent);
+    console.log(component.up);
+    $("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
+    $(".draggableComponent").draggable({
+      appendTo: "body",
+      helper: "clone",
+    });
   }
 });
 //deployボタンが押されたときの挙動
@@ -393,13 +510,21 @@ $('#deploy').click(function () {
     }
   });
   allInConnectedElementList = [];
-
+var allInConnectedElementPromiseArray = [];
   //ソースをallInConnectedElementListに入れる
   uncheckedElementList.forEach(function (element) {
     //源流のとき
     if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
-
-      allInConnectedElementList[element.id] = createSourceFlow().map(compcode[getGroupID(element.id)]);
+      console.log(element);
+      if (element.attributes.attrs.asynchronous) {
+        allInConnectedElementPromiseArray.push(compcode[getGroupID(element.id)]().then(function(value)
+        {
+           allInConnectedElementList[element.id] = value;
+        })
+        );
+      } else {
+        allInConnectedElementList[element.id] = createSourceFlow().map(compcode[getGroupID(element.id)]);
+      }
       //それ以外
     } else {
       unconnectedElementQueue.enqueue(element);
@@ -407,6 +532,7 @@ $('#deploy').click(function () {
 
 
   });
+Promise.all(allInConnectedElementPromiseArray).then(function(){
   var element;
   while (element = unconnectedElementQueue.dequeue()) {
     var links = graph.getConnectedLinks(element, linkInOpt);
@@ -417,10 +543,12 @@ $('#deploy').click(function () {
         Object.keys(allInConnectedElementList).forEach(function (elementID) {
           if (link.getSourceElement().id == elementID) {
             if (typeof element.ports.out === "undefined") {
+              console.log( allInConnectedElementList[elementID]);
               allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[getGroupID(element.id)]);
               connectedElement = true;
               console.log(elementID + "--->" + element.id);
             } else {
+              console.log( allInConnectedElementList[elementID]);
               allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[getGroupID(element.id)]);
               connectedElement = true;
               console.log(elementID + "--->" + element.id);
@@ -475,6 +603,7 @@ $('#deploy').click(function () {
       }
     }
   }
+  });
 });
 
 //jquery ui

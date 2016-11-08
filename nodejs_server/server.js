@@ -71,4 +71,4 @@ server.on('request',
 ); 
 
 server.listen(LISTEN_PORT, LISTEN_IP); 
-console.log('Server running at http://' + LISTEN_IP + ':' + LISTEN_PORT); 
+console.log('Server running at https://' + LISTEN_IP + ':' + LISTEN_PORT); 
