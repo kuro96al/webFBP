@@ -309,6 +309,21 @@ component.accel = new joint.shapes.devs.ComponentModel({
     '.outPorts circle': { fill: '#E74C3C', type: 'output' }
   }
 });
+
+component.temp = new joint.shapes.devs.ComponentModel({
+  id: 'temp/' + generateUUID(),//groupID+UUID
+  position: { x: 300, y: 50 },
+  size: { width: 90, height: 90 },
+  inPorts: [],
+  outPorts: ['out'],
+  attrs: {
+    '.label': { text: 'temp' },
+    rect: { fill: '#2ECC71' },
+    asynchronous: true,
+    '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+    '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+  }
+});
 previewGraph.addCell(previewComponent.attr({ '.body': { 'rx': 6, 'ry': 6 } }));
 graph.addCells([component.up, component.down, component.display, component.multi, component.accel]);
 
@@ -327,7 +342,7 @@ compcode.down = function () {
 
 compcode.multi = function (num) {
   console.log("through multi");
-  return  2;
+  return 2;
 }
 
 compcode.display = function (num) {
@@ -382,7 +397,7 @@ compcode.accel = function () {
     // Change  /2 to match accel range...i.e. 16 g would be /16
     return data / (32768 / 2);
   }
-  var onAccelerometerChanged = function(event) {
+  var onAccelerometerChanged = function (event) {
     var characteristic = event.target;
     var values = getAccelerometerValues(characteristic.value);
     console.log(characteristic);
@@ -399,6 +414,7 @@ compcode.accel = function () {
   })
     .then(device => {
       console.log('Found device: ' + device.name);
+      console.log("detail device:" + device);
       return device.gatt.connect();
     })
     .then(server => {
@@ -439,7 +455,89 @@ compcode.accel = function () {
     });
 }
 
+compcode.temp = function () {
+  console.log("through temp");
+  var stream;
+  var myCharacteristic;
+  // UUIDs
+  var ServiceUUID = 'f000aa40-0451-4000-b000-000000000000';
+  var DataUUID = 'f000aa41-0451-4000-b000-000000000000';
+  var ConfigUUID = 'f000aa42-0451-4000-b000-000000000000';
+  var PeriodUUID = 'f000aa44-0451-4000-b000-000000000000';
+  // turn accelerometer on
+  var configData = new Uint8Array(1);
+  //Turn on accel, 2G range, Disable wake on motion
+  configData[0] = 0x01;
 
+
+  var periodData = new Uint8Array(1);
+  periodData[0] = 0x64;
+  // Variables.
+  var gattServer;
+  var Service;
+
+  function showInfo(info) {
+    console.log(info);
+  }
+  function sensorBarometerConvert(data) {
+    return (data / 100);
+
+  }
+
+  var  onBarometerData = function(event) {
+    var characteristic = event.target;
+    var a = new Uint8Array(characteristic.value.buffer);
+
+    //0-2 Temp
+    //3-5 Pressure
+    return sensorBarometerConvert(a[0] | (a[1] << 8) | (a[2] << 16));
+
+    //sensorBarometerConvert( a[3] | (a[4] << 8) | (a[5] << 16)) + "hPa <br/>" ;
+
+  }
+
+
+  console.log("pushed scan");
+  return navigator.bluetooth.requestDevice({
+    filters: [{
+      namePrefix: "CC2650 SensorTag"
+    }],
+    optionalServices: [ServiceUUID]
+  })
+    .then(device => {
+      console.log('Found device: ' + device.name);
+      console.log("detail device:" + device);
+      return device.gatt.connect();
+    })
+    .then(server => {
+      gattServer = server;
+      console.log('SensorTag connected: ' + gattServer.connected);
+      return gattServer.getPrimaryService(ServiceUUID);
+    })
+    .then(service => {
+      // Get accelerometer config characteristic.
+      Service = service
+      return Service.getCharacteristic(ConfigUUID);
+    })
+    .then(characteristic => {
+      // Turn accelerometer config to ON.
+      return characteristic.writeValue(configData.buffer);
+    })
+    .then(() => {
+      // Get data characteristic.
+      return Service.getCharacteristic(DataUUID);
+    })
+    .then(characteristic => {
+      // Start sensor notification.
+      console.log('Start notficatons')
+      myCharacteristic = characteristic;
+      characteristic.startNotifications();
+      return Bacon.fromEventTarget(myCharacteristic, 'characteristicvaluechanged').map(onBarometerData);
+    })
+    .catch(error => {
+      console.log('Argh! ' + error);
+    });
+}
 
 var linkInOpt = [];
 var linkOutOpt = [];
@@ -510,16 +608,15 @@ $('#deploy').click(function () {
     }
   });
   allInConnectedElementList = [];
-var allInConnectedElementPromiseArray = [];
+  var allInConnectedElementPromiseArray = [];
   //ソースをallInConnectedElementListに入れる
   uncheckedElementList.forEach(function (element) {
     //源流のとき
     if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
       console.log(element);
       if (element.attributes.attrs.asynchronous) {
-        allInConnectedElementPromiseArray.push(compcode[getGroupID(element.id)]().then(function(value)
-        {
-           allInConnectedElementList[element.id] = value;
+        allInConnectedElementPromiseArray.push(compcode[getGroupID(element.id)]().then(function (value) {
+          allInConnectedElementList[element.id] = value;
         })
         );
       } else {
@@ -532,77 +629,77 @@ var allInConnectedElementPromiseArray = [];
 
 
   });
-Promise.all(allInConnectedElementPromiseArray).then(function(){
-  var element;
-  while (element = unconnectedElementQueue.dequeue()) {
-    var links = graph.getConnectedLinks(element, linkInOpt);
-    //inで接続されている数がひとつの場合
-    if (links.length == 1) {
-      var connectedElement = false;
-      links.forEach(function (link) {
-        Object.keys(allInConnectedElementList).forEach(function (elementID) {
-          if (link.getSourceElement().id == elementID) {
-            if (typeof element.ports.out === "undefined") {
-              console.log( allInConnectedElementList[elementID]);
-              allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[getGroupID(element.id)]);
-              connectedElement = true;
-              console.log(elementID + "--->" + element.id);
-            } else {
-              console.log( allInConnectedElementList[elementID]);
-              allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[getGroupID(element.id)]);
-              connectedElement = true;
-              console.log(elementID + "--->" + element.id);
-            }
-          }
-        });
-      });
-      if (!connectedElement) {
-        unconnectedElementQueue.enqueue(element);
-      }
-
-      //inで接続されている数が複数の場合
-    } else if (links.length > 1) {
-      var connectPermission = false;
-      var connectCounter = 0;
-      links.forEach(function (link) {
-        Object.keys(allInConnectedElementList).forEach(function (elementID) {
-          if (link.getSourceElement().id == elementID) {
-            connectCounter++;
-          }
-        });
-        if (connectCounter == links.length) {
-          connectPermission = true;
-        }
-      });
-
-      //merge可能
-      if (connectPermission) {
-        var mergeFlow = null;
+  Promise.all(allInConnectedElementPromiseArray).then(function () {
+    var element;
+    while (element = unconnectedElementQueue.dequeue()) {
+      var links = graph.getConnectedLinks(element, linkInOpt);
+      //inで接続されている数がひとつの場合
+      if (links.length == 1) {
+        var connectedElement = false;
         links.forEach(function (link) {
           Object.keys(allInConnectedElementList).forEach(function (elementID) {
             if (link.getSourceElement().id == elementID) {
-              if (mergeFlow == null) {
-                mergeFlow = allInConnectedElementList[elementID];
-                console.log("merge: " + elementID)
+              if (typeof element.ports.out === "undefined") {
+                console.log(allInConnectedElementList[elementID]);
+                allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[getGroupID(element.id)]);
+                connectedElement = true;
+                console.log(elementID + "--->" + element.id);
               } else {
-                mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
-                console.log("merge: " + elementID)
+                console.log(allInConnectedElementList[elementID]);
+                allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[getGroupID(element.id)]);
+                connectedElement = true;
+                console.log(elementID + "--->" + element.id);
               }
             }
           });
         });
-        if (typeof element.ports.out === "undefined") {
-          allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[getGroupID(element.id)]);
-          console.log("merged flow" + "--->" + element.id);
-        } else {
-          allInConnectedElementList[element.id] = mergeFlow.map(compcode[getGroupID(element.id)]);
-          console.log("merged flow" + "--->" + element.id);
+        if (!connectedElement) {
+          unconnectedElementQueue.enqueue(element);
         }
-      } else {
-        unconnectedElementQueue.enqueue(element);
+
+        //inで接続されている数が複数の場合
+      } else if (links.length > 1) {
+        var connectPermission = false;
+        var connectCounter = 0;
+        links.forEach(function (link) {
+          Object.keys(allInConnectedElementList).forEach(function (elementID) {
+            if (link.getSourceElement().id == elementID) {
+              connectCounter++;
+            }
+          });
+          if (connectCounter == links.length) {
+            connectPermission = true;
+          }
+        });
+
+        //merge可能
+        if (connectPermission) {
+          var mergeFlow = null;
+          links.forEach(function (link) {
+            Object.keys(allInConnectedElementList).forEach(function (elementID) {
+              if (link.getSourceElement().id == elementID) {
+                if (mergeFlow == null) {
+                  mergeFlow = allInConnectedElementList[elementID];
+                  console.log("merge: " + elementID)
+                } else {
+                  mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
+                  console.log("merge: " + elementID)
+                }
+              }
+            });
+          });
+          if (typeof element.ports.out === "undefined") {
+            allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[getGroupID(element.id)]);
+            console.log("merged flow" + "--->" + element.id);
+          } else {
+            allInConnectedElementList[element.id] = mergeFlow.map(compcode[getGroupID(element.id)]);
+            console.log("merged flow" + "--->" + element.id);
+          }
+        } else {
+          unconnectedElementQueue.enqueue(element);
+        }
       }
     }
-  }
   });
 });
 
