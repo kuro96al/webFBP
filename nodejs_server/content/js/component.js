@@ -63,7 +63,22 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
-
+   phoneAccel: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'phoneAccel/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: [],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'phoneAccel' },
+          rect: { fill: '#2ECC71' },
+          asynchronous: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
     accel: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'accel/' + IDManager.generateUUID(),//groupID+UUID
@@ -96,6 +111,6 @@ define(['IDManager'], function (IDManager) {
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
       })
-    }
+    },
   }
 });

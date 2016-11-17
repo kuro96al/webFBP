@@ -21,7 +21,17 @@ define(function () {
             $('#counter').text(sum);
             return 0;
         },
-
+        display: function (num) {
+            console.log("through display");
+            console.log($("#counter").text());
+            var sum = Number($("#counter").text()) + num;
+            $('#counter').text(sum);
+            return 0;
+        },
+        phoneAccel: function (num) {
+            console.log("through display");
+            return Bacon.fromEventTarget(window, "devicemotion").map(function(e){return e.acceleration;});
+        },
         accel: function () {
             console.log("through accel");
             console.log("through accel fromCallback");
