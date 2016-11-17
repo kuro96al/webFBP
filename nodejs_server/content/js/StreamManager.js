@@ -1,4 +1,4 @@
-define(['IDManager','compcode'], function (IDManager,compcode) {
+define(['IDManager', 'compcode'], function (IDManager, compcode) {
     return {
         makeStream(graph) {
             //queue
@@ -78,7 +78,7 @@ define(['IDManager','compcode'], function (IDManager,compcode) {
                         })
                         );
                     } else {
-                        allInConnectedElementList[element.id] = createSourceFlow().map(compcode[IDManager.getGroupID(element.id)]);
+                        allInConnectedElementList[element.id] = compcode[IDManager.getGroupID(element.id)]();
                     }
                     //それ以外
                 } else {
@@ -140,8 +140,13 @@ define(['IDManager','compcode'], function (IDManager,compcode) {
                                             mergeFlow = allInConnectedElementList[elementID];
                                             console.log("merge: " + elementID)
                                         } else {
-                                            mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
-                                            console.log("merge: " + elementID)
+                                            if (!element.attributes.attrs.combine) {
+                                                mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
+                                                console.log("merge: " + elementID)
+                                            } else {
+                                                mergeFlow = mergeFlow.combine(allInConnectedElementList[elementID], compcode[IDManager.getGroupID(element.id)]);
+                                                console.log("combine: " + elementID)
+                                            }
                                         }
                                     }
                                 });

@@ -63,7 +63,7 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
-   phoneAccel: function () {
+    phoneAccel: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'phoneAccel/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
@@ -112,5 +112,38 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
+    chartContainer: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'chartContainer/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: [],
+        attrs: {
+          '.label': { text: 'chartContainer' },
+          rect: { fill: '#2ECC71' },
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+    combine: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'combine/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'combine' },
+          rect: { fill: '#2ECC71' },
+          combine: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    }
   }
 });

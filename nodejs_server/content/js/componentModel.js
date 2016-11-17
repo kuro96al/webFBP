@@ -22,6 +22,7 @@ define(function () {
                             'ref-y': -20
                         },
                         asynchronous: false,
+                        combine:false,
                         rect: {
                             stroke: '#d1d1d1',
                             fill: {

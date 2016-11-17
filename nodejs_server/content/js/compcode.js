@@ -1,25 +1,38 @@
-define(function () {
+define(['ChartManager'], function (ChartManager) {
     return {
         up: function () {
-            console.log("through up");
-            return 1;
+            var upfunction = function () {
+                var e = {}
+                var sum = Number($("#counter").text()) + 1;
+                var timer = Number($("#timer").text()) + 1;
+                $('#counter').text(sum);
+                $('#timer').text(timer);
+                e.value = sum;
+                e.time = timer;
+                // 出力テスト
+                console.log("through up");
+                return e;
+            }
+            return Bacon.interval(3000, 1).map(upfunction);
         },
         down: function () {
-            console.log("through down");
-            return -1;
+            var downfunction = function () {
+                var e = {}
+                var sum = Number($("#counter").text()) - 1;
+                var timer = Number($("#timer").text()) + 1;
+                $('#counter').text(sum);
+                $('#timer').text(timer);
+                e.value = sum;
+                e.time = timer;
+                console.log("through down");
+                return e;
+            }
+            return Bacon.interval(1000, 1).map(downfunction);
         },
 
         multi: function (num) {
             console.log("through multi");
             return 2;
-        },
-
-        display: function (num) {
-            console.log("through display");
-            console.log($("#counter").text());
-            var sum = Number($("#counter").text()) + num;
-            $('#counter').text(sum);
-            return 0;
         },
         display: function (num) {
             console.log("through display");
@@ -30,7 +43,7 @@ define(function () {
         },
         phoneAccel: function (num) {
             console.log("through display");
-            return Bacon.fromEventTarget(window, "devicemotion").map(function(e){return e.acceleration;});
+            return Bacon.fromEventTarget(window, "devicemotion").map(function (e) { return e.acceleration; });
         },
         accel: function () {
             console.log("through accel");
@@ -215,6 +228,21 @@ define(function () {
                 .catch(error => {
                     console.log('Argh! ' + error);
                 });
-        }
+        },
+        chartContainer: function (e) {
+            console.log(e);
+            ChartManager.chartContainer.initialize();
+            ChartManager.chartContainer.push(e);
+        },
+        combine: function (e1,e2) {
+            console.log(e1);
+            console.log(e2);
+            var e = {};
+            e.value = e1.value+e2.value;
+            e.time = e1.time+e2.time;
+            return e;
+        },
+
     }
+
 });

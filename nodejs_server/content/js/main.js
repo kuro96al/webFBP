@@ -111,10 +111,9 @@ $('#create-component').click(function () {
     console.log(editor.getValue());
     var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
     console.log(functionBody);
-    compcode[$("#component-name").val()] = new Function("msg", functionBody)
-    component[$("#component-name").val()] = stationeryComponent;
+    compcode[$("#component-name").val()] = new Function("msg", functionBody);
+    component[$("#component-name").val()] = function(){return stationeryComponent};
     console.log(stationeryComponent);
-    console.log(component.up);
     $("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
     $(".draggableComponent").draggable({
       appendTo: "body",
@@ -160,7 +159,7 @@ $(function () {
     },
     drop: function (event, ui) {
       var componentID = ui.draggable.attr("id");
-      var addComponent = component[componentID]();
+      var addComponent = component[componentID]().clone();
       addComponent.position(ui.position.left - $("#droppable").offset().left, ui.position.top - $("#droppable").offset().top);
       var id = componentID + "/" + IDManager.generateUUID();
       addComponent.set('id', id);
