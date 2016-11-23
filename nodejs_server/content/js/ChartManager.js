@@ -16,14 +16,16 @@ define([], function () {
                 })
             },
             initialize: function () {
+                if(this.instance != null){
                 this.instance = this.chartModel();
+                }
             },
-            push: function (e) {
+            push: function (e1,e2) {
                 var dataLength = 500; // number of dataPoints visible at any point
 
                 this.dps.push({
-                    y: e.value,
-                    x: e.time
+                    x: e1,
+                    y: e2
                 });
                 if (this.dps.length > dataLength) {
                     this.dps.shift();

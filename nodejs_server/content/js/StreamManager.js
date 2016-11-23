@@ -133,30 +133,48 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         //merge可能
                         if (connectPermission) {
                             var mergeFlow = null;
+                            var combineArray = [];
                             links.forEach(function (link) {
                                 Object.keys(allInConnectedElementList).forEach(function (elementID) {
                                     if (link.getSourceElement().id == elementID) {
                                         if (mergeFlow == null) {
-                                            mergeFlow = allInConnectedElementList[elementID];
-                                            console.log("merge: " + elementID)
+                                            if (!element.attributes.attrs.combine) {
+                                                mergeFlow = allInConnectedElementList[elementID];
+                                                console.log("create mergeFlow: " + elementID);
+                                            } else {
+                                                combineArray.push(allInConnectedElementList[elementID]);
+                                                console.log("create combineArray: " + elementID);
+                                            }
                                         } else {
                                             if (!element.attributes.attrs.combine) {
                                                 mergeFlow = mergeFlow.merge(allInConnectedElementList[elementID]);
                                                 console.log("merge: " + elementID)
                                             } else {
-                                                mergeFlow = mergeFlow.combine(allInConnectedElementList[elementID], compcode[IDManager.getGroupID(element.id)]);
-                                                console.log("combine: " + elementID)
+                                                combineArray.push(allInConnectedElementList[elementID]);
+                                                //mergeFlow = mergeFlow.zip(allInConnectedElementList[elementID], compcode[IDManager.getGroupID(element.id)]);
+                                                console.log("combine: " + elementID);
                                             }
                                         }
                                     }
                                 });
                             });
                             if (typeof element.ports.out === "undefined") {
-                                allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[IDManager.getGroupID(element.id)]);
-                                console.log("merged flow" + "--->" + element.id);
+                                if (!element.attributes.attrs.combine) {
+                                    allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[IDManager.getGroupID(element.id)]);
+                                    console.log("merged flow" + "--->" + element.id);
+                                } else {
+                                    allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[IDManager.getGroupID(element.id)]).onValue();
+                                    console.log("combined flow" + "--->" + element.id);
+                                }
+
                             } else {
-                                allInConnectedElementList[element.id] = mergeFlow.map(compcode[IDManager.getGroupID(element.id)]);
-                                console.log("merged flow" + "--->" + element.id);
+                                if (!element.attributes.attrs.combine) {
+                                    allInConnectedElementList[element.id] = mergeFlow.map(compcode[IDManager.getGroupID(element.id)]);
+                                    console.log("merged flow" + "--->" + element.id);
+                                } else {
+                                    allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[IDManager.getGroupID(element.id)]);
+                                    console.log("combined flow" + "--->" + element.id);
+                                }
                             }
                         } else {
                             unconnectedElementQueue.enqueue(element);

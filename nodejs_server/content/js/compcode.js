@@ -2,48 +2,57 @@ define(['ChartManager'], function (ChartManager) {
     return {
         up: function () {
             var upfunction = function () {
-                var e = {}
                 var sum = Number($("#counter").text()) + 1;
-                var timer = Number($("#timer").text()) + 1;
                 $('#counter').text(sum);
-                $('#timer').text(timer);
-                e.value = sum;
-                e.time = timer;
                 // 出力テスト
                 console.log("through up");
+                var e = {};
+                e.x = undefined;
+                e.y = sum;
                 return e;
             }
-            return Bacon.interval(3000, 1).map(upfunction);
+            return Bacon.interval(3000, 1).map(upfunction).toProperty().changes();
         },
         down: function () {
             var downfunction = function () {
-                var e = {}
                 var sum = Number($("#counter").text()) - 1;
-                var timer = Number($("#timer").text()) + 1;
                 $('#counter').text(sum);
-                $('#timer').text(timer);
-                e.value = sum;
-                e.time = timer;
                 console.log("through down");
+                var e = {};
+                e.x = undefined;
+                e.y = sum;
                 return e;
             }
-            return Bacon.interval(1000, 1).map(downfunction);
+            return Bacon.interval(1000, 1).map(downfunction).toProperty().changes();
         },
-
+        date: function () {
+            var newDate = function () {
+                var e = {};
+                e.x = new Date();
+                e.y = undefined;
+                return e;
+            }
+            return Bacon.interval(1000, 1).map(newDate).toProperty().changes();
+        },
         multi: function (num) {
             console.log("through multi");
             return 2;
         },
-        display: function (num) {
+        display: function (msg) {
             console.log("through display");
             console.log($("#counter").text());
             var sum = Number($("#counter").text()) + num;
             $('#counter').text(sum);
             return 0;
         },
-        phoneAccel: function (num) {
-            console.log("through display");
-            return Bacon.fromEventTarget(window, "devicemotion").map(function (e) { return e.acceleration; });
+        phoneAccel: function () {
+            console.log("through phoneAccel");
+            return Bacon.fromEventTarget(window, "devicemotion").map(function (e) {
+                var accel = {};
+                accel.y = e.acceleration.x;
+                accel.x = undefined;
+                 return accel; 
+                });
         },
         accel: function () {
             console.log("through accel");
@@ -181,7 +190,10 @@ define(['ChartManager'], function (ChartManager) {
 
                 //0-2 Temp
                 //3-5 Pressure
-                return sensorBarometerConvert(a[0] | (a[1] << 8) | (a[2] << 16));
+                var e = {};
+                e.x = undefined;
+                e.y = sensorBarometerConvert(a[0] | (a[1] << 8) | (a[2] << 16));
+                return e;
 
                 //sensorBarometerConvert( a[3] | (a[4] << 8) | (a[5] << 16)) + "hPa <br/>" ;
 
@@ -229,18 +241,33 @@ define(['ChartManager'], function (ChartManager) {
                     console.log('Argh! ' + error);
                 });
         },
-        chartContainer: function (e) {
-            console.log(e);
+        chartContainer: function (e1, e2) {
+            var x;
+            var y;
+            //if (typeof e !== "undefined") {
+            if (typeof e1.x !== "undefined") {
+                x = e1.x;
+            } else if (typeof e1.y !== "undefined") {
+                y = e1.y;
+            }
+            if (typeof e2.x !== "undefined") {
+                x = e2.x;
+            } else if (typeof e2.y !== "undefined") {
+                y = e2.y;
+            }
             ChartManager.chartContainer.initialize();
-            ChartManager.chartContainer.push(e);
+            ChartManager.chartContainer.push(x, y);
+            //}
         },
-        combine: function (e1,e2) {
-            console.log(e1);
-            console.log(e2);
-            var e = {};
-            e.value = e1.value+e2.value;
-            e.time = e1.time+e2.time;
-            return e;
+        combine: function (e1, e2) {
+            if (typeof e1 !== "undefined" && typeof e2 !== "undefined") {
+                console.log(e1);
+                console.log(e2);
+                var msg = {};
+                msg.e1 = e1;
+                msg.e2 = e2;
+                return msg;
+            }
         },
 
     }

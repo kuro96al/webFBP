@@ -31,6 +31,22 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
+
+    date: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'date/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 50, y: 200 },
+        size: { width: 90, height: 90 },
+        inPorts: [],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'date' },
+          rect: { fill: '#2ECC71' },
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
     multi: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'multi/' + IDManager.generateUUID(),//groupID+UUID
@@ -73,7 +89,6 @@ define(['IDManager'], function (IDManager) {
         attrs: {
           '.label': { text: 'phoneAccel' },
           rect: { fill: '#2ECC71' },
-          asynchronous: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -122,6 +137,7 @@ define(['IDManager'], function (IDManager) {
         attrs: {
           '.label': { text: 'chartContainer' },
           rect: { fill: '#2ECC71' },
+          combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
