@@ -1,15 +1,17 @@
 require(['component','componentModel','IDManager','compcode','StreamManager'], function(component,componentModel,IDManager,compcode,StreamManager) {
 
 //joinjs
-
+//コンポーネントモデルとコンポーネントモデルビューのインスタンス
 joint.shapes.devs.ComponentModel = componentModel.getModel();
 joint.shapes.devs.ComponentModelView = componentModel.getModelView();
 
 
+
+
 //use
 
+//main editor のインスタンス
 var graph = new joint.dia.Graph;
-
 var paper = new joint.dia.Paper({
   el: $('#myholder'),
   height: $('#myholder').height(),
@@ -33,6 +35,8 @@ var paper = new joint.dia.Paper({
     return magnet.getAttribute('magnet') !== 'passive';
   }
 });
+
+//preview editorのインスタンス
 var previewGraph = new joint.dia.Graph;
 var previewPaper = new joint.dia.Paper({
   el: $('#previewPaper'),
@@ -114,6 +118,7 @@ $('#create-component').click(function () {
     compcode[$("#component-name").val()] = new Function("msg", functionBody);
     component[$("#component-name").val()] = function(){return stationeryComponent};
     console.log(stationeryComponent);
+
     $("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
     $(".draggableComponent").draggable({
       appendTo: "body",

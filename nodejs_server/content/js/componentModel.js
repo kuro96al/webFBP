@@ -1,4 +1,4 @@
-define(function () {
+define(['IDManager', 'compcode'], function (IDManager, compcode) {
     return {
         //モデルの定義
         getModel: function () {
@@ -19,10 +19,10 @@ define(function () {
                             'ry': 6
                         },
                         '.label': {
-                            'ref-y': -20
+                            'ref-y': 100
                         },
                         asynchronous: false,
-                        combine:false,
+                        combine: false,
                         rect: {
                             stroke: '#d1d1d1',
                             fill: {
@@ -57,11 +57,13 @@ define(function () {
                 template: [
                     '<div class="html-element">',
                     '<button class="delete">x</button>',
+                    '<button class="script">js</button>',
+                    '<div class="show-sctipt"></div>',
                     '</div>'
                 ].join(''),
 
                 initialize: function () {
-                    _.bindAll(this, 'updateBox');
+                    _.bindAll(this, 'updateBox', 'showSctipt');
                     joint.dia.ElementView.prototype.initialize.apply(this, arguments);
 
                     this.$box = $(_.template(this.template)());
@@ -78,6 +80,7 @@ define(function () {
                     }, this));
                     this.$box.find('select').val(this.model.get('select'));
                     this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
+                    this.$box.find('.script').on('click', this.showSctipt);
                     // Update the box position whenever the underlying model changes.
                     this.model.on('change', this.updateBox, this);
                     // Remove the box when the model gets removed from the graph.
@@ -106,7 +109,19 @@ define(function () {
                     });
                 },
                 removeBox: function (evt) {
+                    console.log(this.model);
                     this.$box.remove();
+                },
+                showSctipt: function () {
+                    console.log(compcode[IDManager.getGroupID(this.model.id)]);
+                    //this.$box.find('.show-sctipt').append("<p>" + compcode[IDManager.getGroupID(this.model.id)] + "</p>");
+                    console.log(this.$box.find('.show-sctipt'));
+                    var editor = ace.edit( this.$box.find('.show-sctipt')[0]);
+                    editor.setTheme("ace/theme/monokai");
+                    editor.getSession().setMode("ace/mode/javascript");
+                    editor.insert(compcode[IDManager.getGroupID(this.model.id)]+'');
+                    editor.gotoLine(1);
+                    editor.resize();
                 }
             })
         }
