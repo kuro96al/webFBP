@@ -44,7 +44,12 @@
 			clear: both;
 			content: "";
 		}
-		
+		#myholder{
+			height:100%;
+			width:100%;
+			overflow-y: auto;
+		    overflow-x: auto;
+		}
 		#component-option {
 			height: 500px;
 			width: 500px;
@@ -68,9 +73,14 @@
 			top: 0;
 			right: 0;
 			bottom: 0;
-			left: 0;
+			left: 100px;
+			    position: fixed;
+					 z-index: 1000;
 		}
 
+		.btn-group {
+			left: 50px;
+		}
 		#previewPaper{
 			background-color:#ffffff;
 		}
@@ -80,6 +90,7 @@
     /* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
     pointer-events: none;
     -webkit-user-select: none;
+		 z-index: 100;
 }
 .html-element button {
     /* Enable interacting with inputs only. */
@@ -89,33 +100,35 @@
     color: white;
     border: none;
     background-color: #C0392B;
-    border-radius: 20px;
+    border-radius: 30px;
     width: 15px;
     height: 15px;
     line-height: 15px;
     text-align: middle;
     position: relative;
     top: -15px;
-    left: -15px;
+    left: -30px;
     padding: 0;
     margin: 0;
     font-weight: bold;
     cursor: pointer;
+	 z-index: -1;
 }
 .html-element button.script {
     color: white;
     border: none;
     background-color: #00392B;
-    border-radius: 20px;
+    border-radius: 30px;
     width: 15px;
     height: 15px;
     line-height: 15px;
     text-align: middle;
     position: relative;
     top: -15px;
-    left: -15px;
+    left: 60px;
     padding: 0;
     margin: 0;
     font-weight: bold;
     cursor: pointer;
+	 z-index: -1;
 }

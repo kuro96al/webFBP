@@ -95,8 +95,9 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                     this.editor.insert(self.compcode[IDManager.getGroupID(this.model.id)] + '');
                     this.editor.gotoLine(1);
                     this.editor.resize();
+                    this.$box.find('.show-sctipt').resizable();
 
-                    this.$box.find('.btn-group').prepend('<div class="btn-group"><button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-search"></i> <span class="caret"></span></button><ul class="dropdown-menu" id="font-size"><li><a href="#" data-size="10">小さい</a></li><li><a href="#" data-size="12">普通</a></li><li><a href="#" data-size="14">大きい</a></li></ul></div><button class="bold btn btn-default"><i class="glyphicon glyphicon-bold"></i></button><button class="save btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i></button><button class="load btn btn-default"><i class="glyphicon glyphicon-folder-open"></i></button>');
+                    this.$box.find('.btn-group').prepend('<div class="btn-group"><button class="save btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i>');
                     this.$box.find('.save').click(function (e) {
                         var functionBody = selfChild.editor.getValue().match(/\{([^\}]*)\}/g).join('');
                         functionBody = functionBody.substr(1, functionBody.length - 2);
