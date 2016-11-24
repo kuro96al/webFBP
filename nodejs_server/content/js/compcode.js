@@ -34,7 +34,7 @@ define(['ChartManager'], function (ChartManager) {
             }
             return Bacon.interval(1000, 1).map(newDate).toProperty().changes();
         },
-        multi: function (num) {
+        multi: function (msg) {
             console.log("through multi");
             return 2;
         },

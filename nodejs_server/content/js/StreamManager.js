@@ -1,6 +1,6 @@
-define(['IDManager', 'compcode'], function (IDManager, compcode) {
+define(function () {
     return {
-        makeStream(graph) {
+        makeStream(graph,compcode) {
             //queue
             function Queue() {
                 this.__a = new Array();
@@ -73,12 +73,12 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                 if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
                     console.log(element);
                     if (element.attributes.attrs.asynchronous) {
-                        allInConnectedElementPromiseArray.push(compcode[IDManager.getGroupID(element.id)]().then(function (value) {
+                        allInConnectedElementPromiseArray.push(compcode[element.id]().then(function (value) {
                             allInConnectedElementList[element.id] = value;
                         })
                         );
                     } else {
-                        allInConnectedElementList[element.id] = compcode[IDManager.getGroupID(element.id)]();
+                        allInConnectedElementList[element.id] = compcode[element.id]();
                     }
                     //それ以外
                 } else {
@@ -99,12 +99,12 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                                 if (link.getSourceElement().id == elementID) {
                                     if (typeof element.ports.out === "undefined") {
                                         console.log(allInConnectedElementList[elementID]);
-                                        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[IDManager.getGroupID(element.id)]);
+                                        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].onValue(compcode[element.id]);
                                         connectedElement = true;
                                         console.log(elementID + "--->" + element.id);
                                     } else {
                                         console.log(allInConnectedElementList[elementID]);
-                                        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[IDManager.getGroupID(element.id)]);
+                                        allInConnectedElementList[element.id] = allInConnectedElementList[elementID].map(compcode[element.id]);
                                         connectedElement = true;
                                         console.log(elementID + "--->" + element.id);
                                     }
@@ -151,7 +151,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                                                 console.log("merge: " + elementID)
                                             } else {
                                                 combineArray.push(allInConnectedElementList[elementID]);
-                                                //mergeFlow = mergeFlow.zip(allInConnectedElementList[elementID], compcode[IDManager.getGroupID(element.id)]);
+                                                //mergeFlow = mergeFlow.zip(allInConnectedElementList[elementID], compcode[element.id]);
                                                 console.log("combine: " + elementID);
                                             }
                                         }
@@ -160,19 +160,19 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                             });
                             if (typeof element.ports.out === "undefined") {
                                 if (!element.attributes.attrs.combine) {
-                                    allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[IDManager.getGroupID(element.id)]);
+                                    allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[element.id]);
                                     console.log("merged flow" + "--->" + element.id);
                                 } else {
-                                    allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[IDManager.getGroupID(element.id)]).onValue();
+                                    allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[element.id]).onValue();
                                     console.log("combined flow" + "--->" + element.id);
                                 }
 
                             } else {
                                 if (!element.attributes.attrs.combine) {
-                                    allInConnectedElementList[element.id] = mergeFlow.map(compcode[IDManager.getGroupID(element.id)]);
+                                    allInConnectedElementList[element.id] = mergeFlow.map(compcode[element.id]);
                                     console.log("merged flow" + "--->" + element.id);
                                 } else {
-                                    allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[IDManager.getGroupID(element.id)]);
+                                    allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[element.id]);
                                     console.log("combined flow" + "--->" + element.id);
                                 }
                             }

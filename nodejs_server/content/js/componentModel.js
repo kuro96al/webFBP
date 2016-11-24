@@ -2,6 +2,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
     return {
         //モデルの定義
         compcode: compcode,
+        compInstanceCode:{},
         getModel: function () {
             return joint.shapes.devs.Model.extend({
 
@@ -88,22 +89,18 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                     this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
                     this.$box.find('.script').on('click', this.showSctipt);
                     //initialize script editor
-                    console.log(this.$box.find('.show-sctipt'));
                     this.editor = ace.edit(this.$box.find('.show-sctipt')[0]);
                     this.editor.setTheme("ace/theme/monokai");
                     this.editor.getSession().setMode("ace/mode/javascript");
                     this.editor.insert(self.compcode[IDManager.getGroupID(this.model.id)] + '');
                     this.editor.gotoLine(1);
                     this.editor.resize();
-                    console.log(selfChild.editor.getValue().match(/\{([^\}]*)\}/g).join(''));
 
                     this.$box.find('.btn-group').prepend('<div class="btn-group"><button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-search"></i> <span class="caret"></span></button><ul class="dropdown-menu" id="font-size"><li><a href="#" data-size="10">小さい</a></li><li><a href="#" data-size="12">普通</a></li><li><a href="#" data-size="14">大きい</a></li></ul></div><button class="bold btn btn-default"><i class="glyphicon glyphicon-bold"></i></button><button class="save btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i></button><button class="load btn btn-default"><i class="glyphicon glyphicon-folder-open"></i></button>');
                     this.$box.find('.save').click(function (e) {
                         var functionBody = selfChild.editor.getValue().match(/\{([^\}]*)\}/g).join('');
-                        console.log(functionBody);
                         functionBody = functionBody.substr(1, functionBody.length - 2);
-                        console.log(functionBody);
-                        self.compcode[IDManager.getGroupID(selfChild.model.id)] = new Function("msg", functionBody);
+                        self.compInstanceCode[selfChild.model.id] = new Function("msg", functionBody);
                     });
                     // Update the box position whenever the underlying model changes.
                     this.model.on('change', this.updateBox, this);
