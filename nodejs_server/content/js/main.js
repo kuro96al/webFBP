@@ -1,10 +1,10 @@
-require(['component','componentModel','IDManager','compcode','StreamManager'], function(component,componentModel,IDManager,compcode,StreamManager) {
+require(['component','componentModel','IDManager','StreamManager'], function(component,componentModel,IDManager,StreamManager) {
 
 //joinjs
 //コンポーネントモデルとコンポーネントモデルビューのインスタンス
 joint.shapes.devs.ComponentModel = componentModel.getModel();
 joint.shapes.devs.ComponentModelView = componentModel.getModelView();
-
+var compcode = componentModel.compcode;
 
 
 
@@ -114,11 +114,12 @@ $('#create-component').click(function () {
 
     console.log(editor.getValue());
     var functionBody = editor.getValue().match(/\{([^\}]*)\}/g);
+    functionBody = functionBody[0].substr(1,functionBody[0].length-2);
     console.log(functionBody);
     compcode[$("#component-name").val()] = new Function("msg", functionBody);
     component[$("#component-name").val()] = function(){return stationeryComponent};
     console.log(stationeryComponent);
-
+    componentModel.compcode = compcode;
     $("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
     $(".draggableComponent").draggable({
       appendTo: "body",
@@ -261,10 +262,12 @@ function handleInOutType(e) {
 $("#component-name").on("change", handleName);
 $("[name='inout-type']").on("change", handleInOutType);
 //Ace Editor
+
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/javascript");
 editor.insert("Something cool");
 editor.gotoLine(1);
 editor.resize();
+
 });
