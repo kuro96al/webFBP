@@ -1,11 +1,12 @@
 define([], function () {
     return {
         chartContainer: {
+            id:"",
             dps: [],
             instance:{},
             chartModel: function () {
                 self = this;
-                return new CanvasJS.Chart("chartContainer-graph", {
+                return new CanvasJS.Chart(self.id, {
                     title: {
                         text: "Live Random Data"
                     },
@@ -15,9 +16,10 @@ define([], function () {
                     }]
                 })
             },
-            initialize: function () {
+            initialize: function (id) {
                 if(this.instance != null){
                 this.instance = this.chartModel();
+                this.id = id;
                 }
             },
             push: function (e1,e2) {

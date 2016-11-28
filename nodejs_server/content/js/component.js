@@ -47,6 +47,21 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
+    random: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'random/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 50, y: 200 },
+        size: { width: 90, height: 90 },
+        inPorts: [],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'random' },
+          rect: { fill: '#2ECC71' },
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
     multi: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'multi/' + IDManager.generateUUID(),//groupID+UUID

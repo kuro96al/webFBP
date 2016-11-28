@@ -1,4 +1,4 @@
-define(['ChartManager'], function (ChartManager) {
+define(function (ChartManager) {
     return {
         up: function () {
             var upfunction = function () {
@@ -25,6 +25,16 @@ define(['ChartManager'], function (ChartManager) {
             }
             return Bacon.interval(1000, 1).map(downfunction).toProperty().changes();
         },
+        random:function(){
+            var randomfunction = function () {
+                console.log("through random");
+                var e = {};
+                e.x = undefined;
+                e.y = Math.random() * 100;
+                return e;
+            }
+          return Bacon.interval(500, 1).map(randomfunction());   
+        },
         date: function () {
             var newDate = function () {
                 var e = {};
@@ -32,13 +42,14 @@ define(['ChartManager'], function (ChartManager) {
                 e.y = undefined;
                 return e;
             }
-            return Bacon.interval(1000, 1).map(newDate).toProperty().changes();
+            return Bacon.interval(500, 1).map(newDate).toProperty().changes();
         },
         multi: function (msg) {
             console.log("through multi");
             return 2;
         },
         display: function (msg) {
+            {}
             console.log("through display");
             console.log($("#counter").text());
             var sum = Number($("#counter").text()) + num;
@@ -51,8 +62,8 @@ define(['ChartManager'], function (ChartManager) {
                 var accel = {};
                 accel.y = e.acceleration.x;
                 accel.x = undefined;
-                 return accel; 
-                });
+                return accel;
+            }).toProperty(0).sample(500);
         },
         accel: function () {
             console.log("through accel");
@@ -241,10 +252,12 @@ define(['ChartManager'], function (ChartManager) {
                     console.log('Argh! ' + error);
                 });
         },
-        chartContainer: function (e1, e2) {
+        chartContainer:  function (e1, e2) {
+            require(['ChartManager'],function(ChartManager){
+            
+            var id="chartContainer-graph-1";
             var x;
             var y;
-            //if (typeof e !== "undefined") {
             if (typeof e1.x !== "undefined") {
                 x = e1.x;
             } else if (typeof e1.y !== "undefined") {
@@ -255,9 +268,9 @@ define(['ChartManager'], function (ChartManager) {
             } else if (typeof e2.y !== "undefined") {
                 y = e2.y;
             }
-            ChartManager.chartContainer.initialize();
+            ChartManager.chartContainer.initialize(id);
             ChartManager.chartContainer.push(x, y);
-            //}
+            });
         },
         combine: function (e1, e2) {
             if (typeof e1 !== "undefined" && typeof e2 !== "undefined") {

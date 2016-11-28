@@ -129,7 +129,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     
   //コンポーネントコードインスタンスの初期化
   var allElement = graph.getElements();
-  var compInstanceCode = {};
+  var compInstanceCode = componentModel.compcode;
   allElement.forEach(function (element) {
     console.log(componentModel.compInstanceCode);
     if(!componentModel.compInstanceCode.hasOwnProperty(element.id)){

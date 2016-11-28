@@ -2,7 +2,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
     return {
         //モデルの定義
         compcode: compcode,
-        compInstanceCode:{},
+        compInstanceCode: {},
         getModel: function () {
             return joint.shapes.devs.Model.extend({
 
@@ -99,9 +99,15 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
 
                     this.$box.find('.btn-group').prepend('<div class="btn-group"><button class="save btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i>');
                     this.$box.find('.save').click(function (e) {
+                        /*
                         var functionBody = selfChild.editor.getValue().match(/\{([^\}]*)\}/g).join('');
+                        console.log(functionBody);
                         functionBody = functionBody.substr(1, functionBody.length - 2);
+                        console.log(functionBody);
                         self.compInstanceCode[selfChild.model.id] = new Function("msg", functionBody);
+                        */
+                        console.log(eval("(" + selfChild.editor.getValue() +  ")"))
+                        self.compInstanceCode[selfChild.model.id] = eval("(" + selfChild.editor.getValue() +  ")");
                     });
                     // Update the box position whenever the underlying model changes.
                     this.model.on('change', this.updateBox, this);

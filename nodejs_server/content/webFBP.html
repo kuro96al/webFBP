@@ -39,6 +39,7 @@
 								<li id="chartContainer" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">chartContainer</li>
 								<li id="combine" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">combine</li>
 								<li id="date" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">date</li>
+								<li id="random" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">random</li>
 							</ul>
 						</div>
 						<h3>Sensor Component</h3>
@@ -64,7 +65,15 @@
 		</div>
 		<div id="tabs-2">
 			<button id="start" class="ui-state-default"> start </button>
-			<div id="chartContainer-graph" style="height: 300px; width:100%;"></div>
+			<fieldset>
+				<legend>chartContainer-graph-1</legend>
+				<div id="chartContainer-graph-1" class="chartContainer-graph"></div>
+			</fieldset>
+
+			<fieldset>
+				<legend>chartContainer-graph-2</legend>
+				<div id="chartContainer-graph-2" class="chartContainer-graph"></div>
+			</fieldset>
 			<p>
 				Counter : <span id="counter">0</span>
 			</p>
