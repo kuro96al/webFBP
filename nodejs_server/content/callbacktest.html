@@ -1,148 +1,59 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="library/css/joint.min.css" />
-        <link rel="stylesheet" href="css/shapes.devs.css" />
-    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet" type="text/css">
-    <script src="library/js/jquery.js"></script>
-    <script src="library/js/lodash.js"></script>
-    <script src="library/js/backbone.js"></script>
-    <script src="library/js/joint.min.js"></script>
-    <script src="library/js/bacon.js"></script>
-</head>
+<title>HTML5 Audio</title>
+<script type="text/javascript"> 
+//. ブラウザによる差異を吸収
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
+ 
+//. バッファサイズ等
+var audioContext = new AudioContext();
+var bufferSize = 4096;
+var cnt = 0;
+ 
+//. 音声処理
+function onAudioProcess( e ){
+  //. 取得した音声データ
+  var input = e.inputBuffer.getChannelData(0);
 
-<body>
+  //. ↑この input に音声データが入っているので、これをストリーミングなどで処理すればよい。
+  //. 以下は実際にデータが入っていることを確認するためのサンプル処理
 
-<button id="updown"> Push </button>
-<span id="counter">0</span>
-<div id="paper" >
-  <script type="text/javascript">
-
-var graph = new joint.dia.Graph;
-
-var paper = new joint.dia.Paper({
-
-    el: document.getElementById('paper'),
-    width: 800,
-    height: 400,
-    gridSize: 1,
-    model: graph,
-    snapLinks: true,
-    linkPinning: false,
-    embeddingMode: true,
-    highlighting: {
-        'default': {
-            name: 'stroke',
-            options: {
-                padding: 6
-            }
-        },
-        'embedding': {
-            name: 'addClass',
-            options: {
-                className: 'highlighted-parent'
-            }
-        }
-    },
-
-    validateEmbedding: function(childView, parentView) {
-
-        return parentView.model instanceof joint.shapes.devs.Coupled;
-    },
-
-    validateConnection: function(sourceView, sourceMagnet, targetView, targetMagnet) {
-
-        return sourceMagnet != targetMagnet;
+  //. 音声データの最大・最小値を求める
+  var mx = 0, mn = 0;
+  for( var i = 0; i < bufferSize; i ++ ){
+    if( mx < input[i] ){
+      mx = input[i];
     }
-});
-
-var connect = function(source, sourcePort, target, targetPort) {
-
-    var link = new joint.shapes.devs.Link({
-        source: {
-            id: source.id,
-            port: sourcePort
-        },
-        target: {
-            id: target.id,
-            port: targetPort
-        }
-    });
-
-    link.addTo(graph).reparent();
-};
-
-var c1 = new joint.shapes.devs.Coupled({
-
-    position: {
-        x: 230,
-        y: 50
-    },
-    size: {
-        width: 300,
-        height: 300
+    if( mn > input[i] ){
+      mn = input[i];
     }
-});
+  }
 
-c1.set('inPorts', ['in']);
-c1.set('outPorts', ['out 1', 'out 2']);
-
-var a1 = new joint.shapes.devs.Atomic({
-
-    position: {
-        x: 360,
-        y: 260
-    },
-    inPorts: ['xy'],
-    outPorts: ['x', 'y']
-});
-
-var a2 = new joint.shapes.devs.Atomic({
-
-    position: {
-        x: 50,
-        y: 160
-    },
-    outPorts: ['out']
-});
-
-var a3 = new joint.shapes.devs.Atomic({
-
-    position: {
-        x: 650,
-        y: 50
-    },
-    size: {
-        width: 100,
-        height: 300
-    },
-    inPorts: ['a', 'b']
-});
-
-graph.addCells([c1, a1, a2, a3]);
-
-c1.embed(a1);
-
-connect(a2, 'out', c1, 'in');
-connect(c1, 'in', a1, 'xy');
-connect(a1, 'x', c1, 'out 1');
-connect(a1, 'y', c1, 'out 2');
-connect(c1, 'out 1', a3, 'a');
-connect(c1, 'out 2', a3, 'b');
-
-/* rounded corners */
-
-_.each([c1, a1, a2, a3], function(element) {
-
-    element.attr({
-        '.body': {
-            'rx': 6,
-            'ry': 6
-        }
-    });
-});
-
+  //. 一度に取得した音声データの最大・最小値を求める（特に意味は無いが、データが取得できている確認）
+  cnt ++;
+  console.log( "[" + cnt + "] min = " + mn + ", max = " + mx );
+}
+ 
+//. 音声処理開始
+function initialize(){
+  navigator.getUserMedia(
+    { audio: true },
+    function( stream ){
+      //. 音声処理
+      var javascriptnode = audioContext.createScriptProcessor( bufferSize, 1, 1 );
+      var mediastreamsource = audioContext.createMediaStreamSource( stream );
+      window.dotnsf_hack_for_mozzila = mediastreamsource;  //. https://support.mozilla.org/en-US/questions/984179
+      mediastreamsource.connect( javascriptnode );
+            javascriptnode.connect( audioContext.destination );
+      javascriptnode.onaudioprocess = onAudioProcess;
+    },function( e ){
+      console.log( e );
+    }
+  );
+}
 </script>
-
+</head>
+<body onload="initialize()">
 </body>
 </html>

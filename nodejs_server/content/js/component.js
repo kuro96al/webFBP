@@ -142,6 +142,38 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
+        soundmeter: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'soundmeter/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: [],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'soundmeter' },
+          rect: { fill: '#2ECC71' },
+          asynchronous: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
+            gps: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'gps/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: [],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'gps' },
+          rect: { fill: '#2ECC71' },
+          asynchronous: false,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
     chartContainer: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'chartContainer/' + IDManager.generateUUID(),//groupID+UUID
@@ -151,6 +183,23 @@ define(['IDManager'], function (IDManager) {
         outPorts: [],
         attrs: {
           '.label': { text: 'chartContainer' },
+          rect: { fill: '#2ECC71' },
+          combine: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+      noisemap: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'noisemap/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: [],
+        attrs: {
+          '.label': { text: 'noisemap' },
           rect: { fill: '#2ECC71' },
           combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },

@@ -88,6 +88,11 @@
 			height: 300px;
 			width:100%;
 		}
+#noisemap-google{
+     width: 500px;
+     height: 250px;
+     margin: 0 auto;
+}
 
 .html-element {
     position: absolute;

@@ -101,7 +101,34 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   console.log(component.up);
 
   previewGraph.addCell(previewComponent.attr({ '.body': { 'rx': 6, 'ry': 6 } }));
-  graph.addCells([component.up(), component.down(), component.display(), component.multi(), component.accel()]);
+/*
+  var date =component.date();
+  var soundmeter = component.soundmeter();
+  var chartContainer = component.chartContainer();
+  var link1 = new joint.dia.Link({
+      source: { id: date.id },
+      target: { id: chartContainer.id }
+    });
+    var link2 = new joint.dia.Link({
+      source: { id: soundmeter.id },
+      target: { id: chartContainer.id }
+    });
+  graph.addCells([date, soundmeter, chartContainer,link1,link2]);
+*/
+
+
+ var date =component.soundmeter();
+  var soundmeter = component.gps();
+  var chartContainer = component.noisemap();
+  var link1 = new joint.dia.Link({
+      source: { id: date.id },
+      target: { id: chartContainer.id }
+    });
+    var link2 = new joint.dia.Link({
+      source: { id: soundmeter.id },
+      target: { id: chartContainer.id }
+    });
+  graph.addCells([date, soundmeter, chartContainer,link1,link2]);
 
   //Create Componentボタンが押されたときの挙動
   $('#create-component').click(function () {

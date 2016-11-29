@@ -2,6 +2,7 @@
 <html>
 
 <head>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7fWRSN_hGgq5QAUMUb9Xi0bO5MiUnpEg" type="text/javascript"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="library/css/joint.min.css" />
 	<link rel="stylesheet" href="library/jquery-ui-1.12.1.custom/jquery-ui.css" />
@@ -37,6 +38,8 @@
 								<li id="multi" class="ui-state-default draggableComponent" title="入力に対して2をかけて出力する">multi</li>
 								<li id="display" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">display</li>
 								<li id="chartContainer" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">chartContainer</li>
+								<li id="noisemap" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">noisemap</li>
+
 								<li id="combine" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">combine</li>
 								<li id="date" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">date</li>
 								<li id="random" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">random</li>
@@ -48,6 +51,8 @@
 								<li id="phoneAccel" class="ui-state-default draggableComponent" title="加速度を出力する">phoneAccel</li>
 								<li id="accel" class="ui-state-default draggableComponent" title="加速度を出力する">accel</li>
 								<li id="temp" class="ui-state-default draggableComponent" title="温度を出力する">temp</li>
+								<li id="soundmeter" class="ui-state-default draggableComponent" title="温度を出力する">soundmeter</li>
+								<li id="gps" class="ui-state-default draggableComponent" title="温度を出力する">gps</li>
 							</ul>
 						</div>
 						<h3>Advanced Component</h3>
@@ -73,6 +78,12 @@
 			<fieldset>
 				<legend>chartContainer-graph-2</legend>
 				<div id="chartContainer-graph-2" class="chartContainer-graph"></div>
+			</fieldset>
+			<fieldset>
+				<legend>noisemap</legend>
+				<div id="noisemap-google"></div>
+				<div id="noisemap-position"></div>
+				<div id="noisemap-position-plot"></div>
 			</fieldset>
 			<p>
 				Counter : <span id="counter">0</span>

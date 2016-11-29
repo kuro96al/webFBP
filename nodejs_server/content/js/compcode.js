@@ -25,7 +25,7 @@ define(function (ChartManager) {
             }
             return Bacon.interval(1000, 1).map(downfunction).toProperty().changes();
         },
-        random:function(){
+        random: function () {
             var randomfunction = function () {
                 console.log("through random");
                 var e = {};
@@ -33,7 +33,7 @@ define(function (ChartManager) {
                 e.y = Math.random() * 100;
                 return e;
             }
-          return Bacon.interval(500, 1).map(randomfunction());   
+            return Bacon.interval(500, 1).map(randomfunction());
         },
         date: function () {
             var newDate = function () {
@@ -49,7 +49,6 @@ define(function (ChartManager) {
             return 2;
         },
         display: function (msg) {
-            {}
             console.log("through display");
             console.log($("#counter").text());
             var sum = Number($("#counter").text()) + num;
@@ -64,6 +63,62 @@ define(function (ChartManager) {
                 accel.x = undefined;
                 return accel;
             }).toProperty(0).sample(500);
+        },
+        gps: function () {
+            console.log("through gps");
+            var bus = new Bacon.Bus()
+            navigator.geolocation.watchPosition(position => {
+                console.log("get geolocation data");
+                console.log(position);
+                $("#noisemap-position").empty();
+                $("#noisemap-position").prepend("<p>lat:" + position.coords.latitude + "</p>");
+                $("#noisemap-position").prepend("<p>lon:" + position.coords.longitude + "</p>");
+                bus.push(position);
+            });
+            return bus.toProperty(0).sample(2000);
+        },
+        soundmeter: function () {
+            var audioContext = new AudioContext();
+            var bufferSize = 4096;
+            var cnt = 0;
+            var onAudioProcess = function (e) {
+                //. 取得した音声データ
+                var input = e.inputBuffer.getChannelData(0);
+
+                //. ↑この input に音声データが入っているので、これをストリーミングなどで処理すればよい。
+                //. 以下は実際にデータが入っていることを確認するためのサンプル処理
+
+                //. 音声データの最大・最小値を求める
+                var mx = 0, mn = 0;
+                for (var i = 0; i < bufferSize; i++) {
+                    if (mx < input[i]) {
+                        mx = input[i];
+                    }
+                    if (mn > input[i]) {
+                        mn = input[i];
+                    }
+                }
+                //. 一度に取得した音声データの最大・最小値を求める（特に意味は無いが、データが取得できている確認）
+                cnt++;
+                console.log("[" + cnt + "] min = " + mn + ", max = " + mx);
+                /*
+                var sound = {};
+                sound.x = undefined;
+                sound.y = mx;
+                */
+                return mx;
+            }
+            console.log("through soundmeter");
+            return navigator.mediaDevices.getUserMedia(
+                { audio: true }).then(stream => {
+                    //. 音声処理
+                    var javascriptnode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+                    var mediastreamsource = audioContext.createMediaStreamSource(stream);
+                    window.dotnsf_hack_for_mozzila = mediastreamsource;  //. https://support.mozilla.org/en-US/questions/984179
+                    mediastreamsource.connect(javascriptnode);
+                    javascriptnode.connect(audioContext.destination);
+                    return Bacon.fromEventTarget(javascriptnode, 'audioprocess').map(onAudioProcess).toProperty(0).sample(2000);
+                })
         },
         accel: function () {
             console.log("through accel");
@@ -252,24 +307,42 @@ define(function (ChartManager) {
                     console.log('Argh! ' + error);
                 });
         },
-        chartContainer:  function (e1, e2) {
-            require(['ChartManager'],function(ChartManager){
-            
-            var id="chartContainer-graph-1";
-            var x;
-            var y;
-            if (typeof e1.x !== "undefined") {
-                x = e1.x;
-            } else if (typeof e1.y !== "undefined") {
-                y = e1.y;
-            }
-            if (typeof e2.x !== "undefined") {
-                x = e2.x;
-            } else if (typeof e2.y !== "undefined") {
-                y = e2.y;
-            }
-            ChartManager.chartContainer.initialize(id);
-            ChartManager.chartContainer.push(x, y);
+        chartContainer: function (e1, e2) {
+            require(['ChartManager'], function (ChartManager) {
+
+                var id = "chartContainer-graph-1";
+                var x;
+                var y;
+                if (typeof e1.x !== "undefined") {
+                    x = e1.x;
+                } else if (typeof e1.y !== "undefined") {
+                    y = e1.y;
+                }
+                if (typeof e2.x !== "undefined") {
+                    x = e2.x;
+                } else if (typeof e2.y !== "undefined") {
+                    y = e2.y;
+                }
+                ChartManager.chartContainer.initialize(id);
+                ChartManager.chartContainer.push(x, y);
+            });
+        },
+        noisemap: function (e1, e2) {
+            require(['GoogleMapManager'], function (GoogleMapManager) {
+
+                var id = "noisemap-google";
+                var position;
+                var noise;
+                if (e1.coords) {
+                    position = e1;
+                    noise = e2;
+                } else if (e2.coords) {
+                    position = e2;
+                    noise = e1;
+                }
+
+                GoogleMapManager.noisemap.initialize(id);
+                GoogleMapManager.noisemap.push(position, noise);
             });
         },
         combine: function (e1, e2) {
