@@ -29,13 +29,14 @@ define([], function () {
                     $("#noisemap-position-plot").empty();
                     $("#noisemap-position-plot").prepend("<p>plot-lat:" + position.coords.latitude + "</p>");
                     $("#noisemap-position-plot").prepend("<p>plot-lon:" + position.coords.longitude + "</p>");
-                //24bit/2
-                var colorNum = Math.floor((16777216/2)*noise);
+                //8bit*noise
+                var colorNum = Math.floor((255)*noise);
+                if(colorNum>255)colorNum=255;
                 new google.maps.Circle({
-                    strokeColor: "#"+colorNum.toString(16),
+                    strokeColor: "#"+(-colorNum+255).toString(16)+"ffff",
                     strokeOpacity: 0.8,
                     strokeWeight: 2,
-                    fillColor: "#"+colorNum.toString(16),
+                    fillColor: "#"+(-colorNum+255).toString(16)+"ffff",
                     fillOpacity: 0.35,
                     map: self.instance,
                     center: pos,

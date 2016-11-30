@@ -1,0 +1,124 @@
+<html>
+
+<head>
+	<title>HTML5 Audio</title>
+	<script type="text/javascript" src="jquery.js"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7fWRSN_hGgq5QAUMUb9Xi0bO5MiUnpEg" type="text/javascript"></script>
+	<style type="text/css">
+		#noisemap-google {
+			width: 500px;
+			height: 250px;
+			margin: 0 auto;
+		}
+	</style>
+	<script type="text/javascript"> 
+
+ 
+//. バッファサイズ等
+var audioContext = new AudioContext();
+var bufferSize = 4096;
+var cnt = 0;
+var noise ;
+var position ;
+var map;
+
+function initialize(){
+
+
+//. 音声処理
+function onAudioProcess( e ){
+  //. 取得した音声データ
+  var input = e.inputBuffer.getChannelData(0);
+
+  //. ↑この input に音声データが入っているので、これをストリーミングなどで処理すればよい。
+  //. 以下は実際にデータが入っていることを確認するためのサンプル処理
+
+  //. 音声データの最大・最小値を求める
+  var mx = 0, mn = 0;
+  for( var i = 0; i < bufferSize; i ++ ){
+    if( mx < input[i] ){
+      mx = input[i];
+    }
+    if( mn > input[i] ){
+      mn = input[i];
+    }
+  }
+
+  //. 一度に取得した音声データの最大・最小値を求める（特に意味は無いが、データが取得できている確認）
+  cnt ++;
+  console.log( "[" + cnt + "] min = " + mn + ", max = " + mx );
+  noise = mx;
+}
+ 
+//. 音声処理開始
+  navigator.getUserMedia(
+    { audio: true },
+    function( stream ){
+      //. 音声処理
+      var javascriptnode = audioContext.createScriptProcessor( bufferSize, 1, 1 );
+      var mediastreamsource = audioContext.createMediaStreamSource( stream );
+      window.dotnsf_hack_for_mozzila = mediastreamsource;  //. https://support.mozilla.org/en-US/questions/984179
+      mediastreamsource.connect( javascriptnode );
+            javascriptnode.connect( audioContext.destination );
+      javascriptnode.onaudioprocess = onAudioProcess;
+    },function( e ){
+      console.log( e );
+    }
+  );
+
+
+//gps
+navigator.geolocation.watchPosition(positions => {
+                console.log("get geolocation data");
+                console.log(positions);
+                $("#noisemap-position").empty();
+                $("#noisemap-position").prepend("<p>lat:" + positions.coords.latitude + "</p>");
+                $("#noisemap-position").prepend("<p>lon:" + positions.coords.longitude + "</p>");
+                position = positions;
+            });
+
+
+var displayMap=function(){
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                    $("#noisemap-position-plot").empty();
+                    $("#noisemap-position-plot").prepend("<p>plot-lat:" + position.coords.latitude + "</p>");
+                    $("#noisemap-position-plot").prepend("<p>plot-lon:" + position.coords.longitude + "</p>");
+                //8bit*noise
+                var colorNum = Math.floor((255)*noise);
+                if(colorNum>255)colorNum=255;
+                new google.maps.Circle({
+                    strokeColor: "#"+(-colorNum+255).toString(16)+"ffff",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#"+(-colorNum+255).toString(16)+"ffff",
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: pos,
+                    radius: 1
+                });
+                map.panTo(pos);
+}
+
+    map = new google.maps.Map(document.getElementById("noisemap-google"), {
+                    zoom: 13,
+                    center: { lat: 37.090, lng: -95.712 },
+                    mapTypeId: google.maps.MapTypeId.TERRAIN
+                });
+
+               window.setTimeout( function() {setInterval(displayMap,1000)},10000);
+}
+            
+</script>
+</head>
+
+<body onload="initialize()">
+	<div id="noisemap-google"></div>
+	<div id="noisemap-position"></div>
+	<div id="noisemap-position-plot"></div>
+	<button id="initialize">initialize</button>
+</body>
+
+</html>
