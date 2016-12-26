@@ -327,6 +327,20 @@ define(function (ChartManager) {
                 ChartManager.chartContainer.push(x, y);
             });
         },
+        noisetuberegist: function (e1, e2) {
+            var msg = {};
+            $.extend(msg, e1, e2);
+            var apikey = "99cc75a0920d4420898905b6e9a14bb86ffe9a09";
+            var newSessionURL = "http://www.noisetube.net/api/newsession?key="+apikey;
+            var updateURL = "http://www.noisetube.net/api/update?key="+apikey+"&l=geo:"+msg.payload.position.coords.latitude+","+msg.payload.position.coords.longitude+"&db="+msg.payload.db;
+            var endSessionURL = "http://www.noisetube.net/api/endsesssion?key="+apikey;
+            fetch(newSessionURL).then(response =>{console.log("newSession");
+                fetch(updateURL).then(response =>{console.log("updateSession");
+                    fetch(endSessionURL).then(response =>{console.log("endSession");
+                    })
+                })
+            })
+        },
         noisemap: function (e1, e2) {
             require(['GoogleMapManager'], function (GoogleMapManager) {
 
