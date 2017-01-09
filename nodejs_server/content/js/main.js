@@ -101,34 +101,84 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   console.log(component.up);
 
   previewGraph.addCell(previewComponent.attr({ '.body': { 'rx': 6, 'ry': 6 } }));
-/*
-  var date =component.date();
+  /*
+    var date =component.date();
+    var soundmeter = component.soundmeter();
+    var chartContainer = component.chartContainer();
+    var link1 = new joint.dia.Link({
+        source: { id: date.id },
+        target: { id: chartContainer.id }
+      });
+      var link2 = new joint.dia.Link({
+        source: { id: soundmeter.id },
+        target: { id: chartContainer.id }
+      });
+    graph.addCells([date, soundmeter, chartContainer,link1,link2]);
+  */
+
+  //検証用コード
   var soundmeter = component.soundmeter();
-  var chartContainer = component.chartContainer();
+  var gps = component.gps();
+  var delay1 = component.delay();
+  var delay2 = component.delay();
+  var combine = component.combine();
+  var noisemaprealtime = component.noisemaprealtime();
+  var noisetubeget = component.noisetubeget();
+  var noisemappast = component.noisemappast();
+  var noisetuberegist = component.noisetuberegist();
+  var boxRangePosition = component.boxRangePosition();
+  var bufferWithCount = component.bufferWithCount();
+  var noisePastInformationDisplay = component.noisePastInformationDisplay();
+  var averageNoise = component.averageNoise();
   var link1 = new joint.dia.Link({
-      source: { id: date.id },
-      target: { id: chartContainer.id }
-    });
-    var link2 = new joint.dia.Link({
-      source: { id: soundmeter.id },
-      target: { id: chartContainer.id }
-    });
-  graph.addCells([date, soundmeter, chartContainer,link1,link2]);
-*/
+    source: { id: gps.id },
+    target: { id: combine.id }
+  });
+  var link2 = new joint.dia.Link({
+    source: { id: soundmeter.id },
+    target: { id: combine.id }
+  });
+  var link3 = new joint.dia.Link({
+    source: { id: combine.id },
+    target: { id: delay1.id }
+  });
+  var link4 = new joint.dia.Link({
+    source: { id: delay1.id },
+    target: { id: boxRangePosition.id }
+  });
+  var link5 = new joint.dia.Link({
+    source: { id: combine.id },
+    target: { id: noisemaprealtime.id }
+  });
+  var link6 = new joint.dia.Link({
+    source: { id: noisetubeget.id },
+    target: { id: noisemappast.id }
+  });
+  var link7 = new joint.dia.Link({
+    source: { id: combine.id },
+    target: { id: noisetuberegist.id }
+  });
+  var link8 = new joint.dia.Link({
+    source: { id: boxRangePosition.id },
+    target: { id: noisetubeget.id }
+  });
+  var link9 = new joint.dia.Link({
+    source: { id: combine.id },
+    target: { id: noisePastInformationDisplay.id }
+  });
+   var link10 = new joint.dia.Link({
+    source: { id: combine.id },
+    target: { id: bufferWithCount.id }
+  });
+   var link11 = new joint.dia.Link({
+    source: { id: bufferWithCount.id },
+    target: { id: averageNoise.id }
+  });
+  graph.addCells([averageNoise,noisePastInformationDisplay,bufferWithCount,boxRangePosition,gps, noisetuberegist, noisetubeget, noisemaprealtime, noisemappast, combine, delay1, soundmeter]);
 
-
- var date =component.soundmeter();
-  var soundmeter = component.gps();
-  var chartContainer = component.noisemap();
-  var link1 = new joint.dia.Link({
-      source: { id: date.id },
-      target: { id: chartContainer.id }
-    });
-    var link2 = new joint.dia.Link({
-      source: { id: soundmeter.id },
-      target: { id: chartContainer.id }
-    });
-  graph.addCells([date, soundmeter, chartContainer,link1,link2]);
+  //graph.addCells([link9, link8]);
+  //graph.addCells([link1, link2,link5]);
+  graph.addCells([link1, link2, link3, link4, link5, link6, link7,link8,link9,link10,link11]);
 
   //Create Componentボタンが押されたときの挙動
   $('#create-component').click(function () {
@@ -153,19 +203,19 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   });
   //deployボタンが押されたときの挙動
   $('#deploy').click(function () {
-    
-  //コンポーネントコードインスタンスの初期化
-  var allElement = graph.getElements();
-  var compInstanceCode = componentModel.compcode;
-  allElement.forEach(function (element) {
+
+    //コンポーネントコードインスタンスの初期化
+    var allElement = graph.getElements();
+    var compInstanceCode = componentModel.compcode;
+    allElement.forEach(function (element) {
+      console.log(componentModel.compInstanceCode);
+      if (!componentModel.compInstanceCode.hasOwnProperty(element.id)) {
+        console.log("make component instance code");
+        componentModel.compInstanceCode[element.id] = componentModel.compcode[IDManager.getGroupID(element.id)];
+      }
+    });
     console.log(componentModel.compInstanceCode);
-    if(!componentModel.compInstanceCode.hasOwnProperty(element.id)){
-      console.log("make component instance code");
-    componentModel.compInstanceCode[element.id] = componentModel.compcode[IDManager.getGroupID(element.id)];
-    }
-  });
-    console.log(componentModel.compInstanceCode);
-    StreamManager.makeStream(graph,componentModel.compInstanceCode);
+    StreamManager.makeStream(graph, componentModel.compInstanceCode);
   });
 
   //jquery ui

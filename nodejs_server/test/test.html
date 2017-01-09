@@ -1,124 +1,195 @@
 <html>
 
 <head>
-	<title>HTML5 Audio</title>
-	<script type="text/javascript" src="jquery.js"></script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7fWRSN_hGgq5QAUMUb9Xi0bO5MiUnpEg" type="text/javascript"></script>
-	<style type="text/css">
-		#noisemap-google {
+  <title>HTML5 Audio</title>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7fWRSN_hGgq5QAUMUb9Xi0bO5MiUnpEg" type="text/javascript"></script>
+  <style type="text/css">
+		.noisemap-google {
 			width: 500px;
 			height: 250px;
 			margin: 0 auto;
 		}
 	</style>
-	<script type="text/javascript"> 
-
- 
-//. バッファサイズ等
-var audioContext = new AudioContext();
-var bufferSize = 4096;
-var cnt = 0;
-var noise ;
-var position ;
-var map;
-
-function initialize(){
+<script type="text/javascript"> 
 
 
-//. 音声処理
-function onAudioProcess( e ){
-  //. 取得した音声データ
-  var input = e.inputBuffer.getChannelData(0);
+  //. バッファサイズ等
+  var audioContext = new AudioContext();
+  var bufferSize = 4096;
+  var cnt = 0;
+  var noise;
+  var position;
+  var mapPast;
+  var mapRealtime;
+  var map;
+  var pastPostion;
+  var noiseArray = [];
 
-  //. ↑この input に音声データが入っているので、これをストリーミングなどで処理すればよい。
-  //. 以下は実際にデータが入っていることを確認するためのサンプル処理
+  function initialize() {
 
-  //. 音声データの最大・最小値を求める
-  var mx = 0, mn = 0;
-  for( var i = 0; i < bufferSize; i ++ ){
-    if( mx < input[i] ){
-      mx = input[i];
+
+    //. 音声処理
+    function onAudioProcess(e) {
+      //. 取得した音声データ
+      var input = e.inputBuffer.getChannelData(0);
+
+      var mx = Math.max.apply(null, input);
+      noise = 20 * Math.log(mx / 0.00002);;
     }
-    if( mn > input[i] ){
-      mn = input[i];
+
+    //. 音声処理開始
+    navigator.getUserMedia(
+      { audio: true },
+      function (stream) {
+        //. 音声処理
+        var javascriptnode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+        var mediastreamsource = audioContext.createMediaStreamSource(stream);
+        window.dotnsf_hack_for_mozzila = mediastreamsource;  //. https://support.mozilla.org/en-US/questions/984179
+        mediastreamsource.connect(javascriptnode);
+        javascriptnode.connect(audioContext.destination);
+        javascriptnode.onaudioprocess = onAudioProcess;
+      }, function (e) {
+        console.log(e);
+      }
+    );
+
+
+    //gps
+    navigator.geolocation.watchPosition(positions => {
+      console.log("get geolocation data");
+      console.log(positions);
+      $("#noisemap-position").empty();
+      $("#noisemap-position").prepend("<p>lat:" + positions.coords.latitude + "</p>");
+      $("#noisemap-position").prepend("<p>lon:" + positions.coords.longitude + "</p>");
+      position = positions;
+    });
+
+
+    var displayMapRealtime = function () {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      var apikey = "99cc75a0920d4420898905b6e9a14bb86ffe9a09";
+      var newSessionURL = "http://www.noisetube.net/api/newsession?key=" + apikey;
+      var updateURL = "http://www.noisetube.net/api/update?key=" + apikey + "&l=geo:" + position.coords.latitude + "," + position.coords.longitude + "&db=" + noise;
+      var endSessionURL = "http://www.noisetube.net/api/endsesssion?key=" + apikey;
+      $.get(newSessionURL, function (data) { console.log(data) }).then(data => {
+        console.log("newSession");
+        console.log(data);
+        $.get(updateURL).then(response => {
+          console.log("updateSession");
+          console.log(response);
+          $.get(endSessionURL).then(response => {
+            console.log("endSession");
+            console.log(response);
+          })
+        })
+      })
+      $("#noisemap-past-information").append(
+        "<tr>" +
+        "<td>lat:" + position.coords.latitude + "---</td>" +
+        "<td>lng:" + position.coords.longitude + "---</td>" +
+        "<td>db:" + noise + "</td>" +
+        "<tr>");
+      if ($("#noisemap-past-information").children().length > 20) {
+        $("#noisemap-past-information").children()[0].remove();
+        $("#noisemap-past-information").children()[0].remove();
+      }
+      noiseArray.push(noise);
+      if (noiseArray.length >= 5) {
+        var sum = 0;
+        noiseArray.forEach(function (ns) {
+          sum += ns;
+        }, this);
+        $("#noise-average").empty();
+        $("#noise-average").append("<p>" + sum / noiseArray.length + "</p>");
+        noiseArray = [];
+      }
+      //8bit*noise
+      var colorNum = Math.floor((255) * noise);
+      if (colorNum > 255) colorNum = 255;
+      new google.maps.Circle({
+        strokeColor: "#" + (-colorNum + 255).toString(16) + "ffff",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#" + (-colorNum + 255).toString(16) + "ffff",
+        fillOpacity: 0.35,
+        map: mapRealtime,
+        center: pos,
+        radius: 1
+      });
+      mapRealtime.panTo(pos);
     }
+    mapRealtime = new google.maps.Map(document.getElementById("noisemap-google-realtime"), {
+      zoom: 13,
+      center: { lat: 37.090, lng: -95.712 },
+      mapTypeId: google.maps.MapTypeId.TERRAIN
+    });
+    window.setTimeout(function () { setInterval(displayMapRealtime, 1000) }, 5000);
+
+    var displayMapPast = function (lat, lng) {
+      var pos = {
+        lat: lat,
+        lng: lng
+      };
+      //8bit*noise
+      var colorNum = Math.floor((255) * noise);
+      if (colorNum > 255) colorNum = 255;
+      new google.maps.Circle({
+        strokeColor: "#" + (-colorNum + 255).toString(16) + "ffff",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#" + (-colorNum + 255).toString(16) + "ffff",
+        fillOpacity: 0.35,
+        map: mapPast,
+        center: pos,
+        radius: 1
+      });
+      mapPast.panTo(pos);
+    }
+    mapPast = new google.maps.Map(document.getElementById("noisemap-google-past"), {
+      zoom: 13,
+      center: { lat: 37.090, lng: -95.712 },
+      mapTypeId: google.maps.MapTypeId.TERRAIN
+    });
+
+    var noisemapPastInformationInsert = function () {
+
+      var lat1 = position.coords.latitude;
+      var lng1 = position.coords.longitude;
+      var lat2 = lat1 + 0.0000001;
+      var lng2 = lng1 + 0.0000001;
+
+      var apikey = "99cc75a0920d4420898905b6e9a14bb86ffe9a09";
+      var searchURL1 = "http://www.noisetube.net/api/search.json?key=" + apikey + "&box=" + lat1 + "," + lng1 + "," + lat2 + "," + lng2;
+      var searchURL = "noisetube/noiseinfo.json";
+
+      console.log(searchURL);
+      $.get(searchURL).then(data => {
+        console.log(data)
+        data.forEach(function (pos) {
+          displayMapPast(pos.lat, pos.lng);
+        }, this);
+
+      });
+
+    }
+    window.setTimeout(function () { setInterval(noisemapPastInformationInsert, 3000) }, 5000);
   }
-
-  //. 一度に取得した音声データの最大・最小値を求める（特に意味は無いが、データが取得できている確認）
-  cnt ++;
-  console.log( "[" + cnt + "] min = " + mn + ", max = " + mx );
-  noise = mx;
-}
- 
-//. 音声処理開始
-  navigator.getUserMedia(
-    { audio: true },
-    function( stream ){
-      //. 音声処理
-      var javascriptnode = audioContext.createScriptProcessor( bufferSize, 1, 1 );
-      var mediastreamsource = audioContext.createMediaStreamSource( stream );
-      window.dotnsf_hack_for_mozzila = mediastreamsource;  //. https://support.mozilla.org/en-US/questions/984179
-      mediastreamsource.connect( javascriptnode );
-            javascriptnode.connect( audioContext.destination );
-      javascriptnode.onaudioprocess = onAudioProcess;
-    },function( e ){
-      console.log( e );
-    }
-  );
-
-
-//gps
-navigator.geolocation.watchPosition(positions => {
-                console.log("get geolocation data");
-                console.log(positions);
-                $("#noisemap-position").empty();
-                $("#noisemap-position").prepend("<p>lat:" + positions.coords.latitude + "</p>");
-                $("#noisemap-position").prepend("<p>lon:" + positions.coords.longitude + "</p>");
-                position = positions;
-            });
-
-
-var displayMap=function(){
-                var pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                    $("#noisemap-position-plot").empty();
-                    $("#noisemap-position-plot").prepend("<p>plot-lat:" + position.coords.latitude + "</p>");
-                    $("#noisemap-position-plot").prepend("<p>plot-lon:" + position.coords.longitude + "</p>");
-                //8bit*noise
-                var colorNum = Math.floor((255)*noise);
-                if(colorNum>255)colorNum=255;
-                new google.maps.Circle({
-                    strokeColor: "#"+(-colorNum+255).toString(16)+"ffff",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#"+(-colorNum+255).toString(16)+"ffff",
-                    fillOpacity: 0.35,
-                    map: map,
-                    center: pos,
-                    radius: 1
-                });
-                map.panTo(pos);
-}
-
-    map = new google.maps.Map(document.getElementById("noisemap-google"), {
-                    zoom: 13,
-                    center: { lat: 37.090, lng: -95.712 },
-                    mapTypeId: google.maps.MapTypeId.TERRAIN
-                });
-
-               window.setTimeout( function() {setInterval(displayMap,1000)},10000);
-}
-            
 </script>
 </head>
 
 <body onload="initialize()">
-	<div id="noisemap-google"></div>
-	<div id="noisemap-position"></div>
-	<div id="noisemap-position-plot"></div>
-	<button id="initialize">initialize</button>
+<div id="noisemap-google-past" class="noisemap-google"></div>
+<div id="noisemap-google-realtime" class="noisemap-google"></div>
+<div id="noise-average"></div>
+<div id="noisemap-past-information"></div>
+<div id="noisemap-position"></div>
+<div id="noisemap-position-plot"></div>
+<button id="initialize">initialize</button>
 </body>
 
 </html>

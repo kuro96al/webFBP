@@ -1,7 +1,7 @@
-define(function () {
+define(["BasicStreamFunction"], function (BasicStreamFunction) {
     return {
-        allInConnectedElementList:[],
-        makeStream:function(graph,compcode) {
+        allInConnectedElementList: [],
+        makeStream: function (graph, compcode) {
             var self = this;
             //queue
             function Queue() {
@@ -91,6 +91,7 @@ define(function () {
             Promise.all(allInConnectedElementPromiseArray).then(function () {
                 var element;
                 while (element = unconnectedElementQueue.dequeue()) {
+                    console.log(element.id);
                     var links = graph.getConnectedLinks(element, linkInOpt);
                     //inで接続されている数がひとつの場合
                     if (links.length == 1) {
@@ -98,16 +99,27 @@ define(function () {
                         links.forEach(function (link) {
                             Object.keys(self.allInConnectedElementList).forEach(function (elementID) {
                                 if (link.getSourceElement().id == elementID) {
+                                    connectedElement = true;
                                     if (typeof element.ports.out === "undefined") {
-                                        console.log(self.allInConnectedElementList[elementID]);
+                                        console.log(elementID);
                                         self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].onValue(compcode[element.id]);
-                                        connectedElement = true;
                                         console.log(elementID + "--->" + element.id);
                                     } else {
-                                        console.log(self.allInConnectedElementList[elementID]);
-                                        self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].map(compcode[element.id]);
-                                        connectedElement = true;
-                                        console.log(elementID + "--->" + element.id);
+                                        if (element.attributes.attrs.throttle) {
+                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].throttle(compcode[element.id]());
+                                            console.log(elementID + "--->" + element.id);
+                                        } else if (element.attributes.attrs.bufferWithCount) {
+                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].slidingWindow(compcode[element.id](),compcode[element.id]());
+                                            console.log(elementID + "--->" + element.id);
+                                        } else {
+                                            if (!element.attributes.attrs.asynchronous) {
+                                                console.log(elementID);
+                                                self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].map(compcode[element.id]);
+                                                console.log(elementID + "--->" + element.id);
+                                            } else {
+                                                self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].flatMap(compcode[element.id]);
+                                            }
+                                        }
                                     }
                                 }
                             });
@@ -164,17 +176,37 @@ define(function () {
                                     self.allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[element.id]);
                                     console.log("merged flow" + "--->" + element.id);
                                 } else {
-                                    self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[element.id]).onValue();
+                                    console.log("combine" + combineArray.length);
+                                    console.log(compcode["combine" + combineArray.length]);
+                                    console.log(BasicStreamFunction);
+                                    self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).onValue(compcode[element.id]);
                                     console.log("combined flow" + "--->" + element.id);
                                 }
 
                             } else {
                                 if (!element.attributes.attrs.combine) {
-                                    self.allInConnectedElementList[element.id] = mergeFlow.map(compcode[element.id]);
-                                    console.log("merged flow" + "--->" + element.id);
+                                    if (element.attributes.attrs.throttle) {
+                                        self.allInConnectedElementList[element.id] = mergeFlow.throttle(compcode[element.id]());
+                                        console.log("merge throttle flow" + "--->" + element.id);
+                                    } else if (element.attributes.attrs.bufferWithCount) {
+                                        self.allInConnectedElementList[element.id] = mergeFlow.slidingWindow(compcode[element.id](),compcode[element.id]());
+                                        console.log("merge bufferWithCount flow" + "--->" + element.id);
+                                    } else {
+                                        self.allInConnectedElementList[element.id] = mergeFlow.map(compcode[element.id]);
+                                        console.log("merged flow" + "--->" + element.id);
+                                    }
                                 } else {
-                                    self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, compcode[element.id]);
-                                    console.log("combined flow" + "--->" + element.id);
+                                    if (element.attributes.attrs.throttle) {
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).throttle(compcode[element.id]());
+                                        console.log("combine throttle flow" + "--->" + element.id);
+                                    } else if (element.attributes.attrs.bufferWithCount) {
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).slidingWindow(compcode[element.id](),compcode[element.id]());
+                                        console.log("combine bufferWithCount flow" + "--->" + element.id);
+                                    } else {
+                                        console.log("combine" + combineArray.length);
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).map(compcode[element.id]);
+                                        console.log("combined flow" + "--->" + element.id);
+                                    }
                                 }
                             }
                         } else {

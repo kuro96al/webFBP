@@ -1,5 +1,11 @@
 define(function (ChartManager) {
     return {
+        delay: function () {
+            return 10000;
+        },
+        bufferWithCount: function () {
+            return 10;
+        },
         up: function () {
             var upfunction = function () {
                 var sum = Number($("#counter").text()) + 1;
@@ -65,15 +71,18 @@ define(function (ChartManager) {
             }).toProperty(0).sample(500);
         },
         gps: function () {
+            var msg = {};
+            msg.payload = {};
             console.log("through gps");
-            var bus = new Bacon.Bus()
+            var bus = new Bacon.Bus();
             navigator.geolocation.watchPosition(position => {
                 console.log("get geolocation data");
                 console.log(position);
                 $("#noisemap-position").empty();
                 $("#noisemap-position").prepend("<p>lat:" + position.coords.latitude + "</p>");
                 $("#noisemap-position").prepend("<p>lon:" + position.coords.longitude + "</p>");
-                bus.push(position);
+                msg.payload.position = position;
+                bus.push(msg);
             });
             return bus.toProperty(0).sample(2000);
         },
@@ -84,29 +93,12 @@ define(function (ChartManager) {
             var onAudioProcess = function (e) {
                 //. 取得した音声データ
                 var input = e.inputBuffer.getChannelData(0);
+               var mx = Math.max.apply(null,input);
 
-                //. ↑この input に音声データが入っているので、これをストリーミングなどで処理すればよい。
-                //. 以下は実際にデータが入っていることを確認するためのサンプル処理
-
-                //. 音声データの最大・最小値を求める
-                var mx = 0, mn = 0;
-                for (var i = 0; i < bufferSize; i++) {
-                    if (mx < input[i]) {
-                        mx = input[i];
-                    }
-                    if (mn > input[i]) {
-                        mn = input[i];
-                    }
-                }
-                //. 一度に取得した音声データの最大・最小値を求める（特に意味は無いが、データが取得できている確認）
-                cnt++;
-                console.log("[" + cnt + "] min = " + mn + ", max = " + mx);
-                /*
-                var sound = {};
-                sound.x = undefined;
-                sound.y = mx;
-                */
-                return mx;
+                var msg = {};
+                msg.payload = {};
+                msg.payload.db = 20 * Math.log(mx / 0.00002);
+                return msg;
             }
             console.log("through soundmeter");
             return navigator.mediaDevices.getUserMedia(
@@ -307,69 +299,119 @@ define(function (ChartManager) {
                     console.log('Argh! ' + error);
                 });
         },
-        chartContainer: function (e1, e2) {
+        chartContainer: function (msg) {
             require(['ChartManager'], function (ChartManager) {
 
                 var id = "chartContainer-graph-1";
-                var x;
-                var y;
-                if (typeof e1.x !== "undefined") {
-                    x = e1.x;
-                } else if (typeof e1.y !== "undefined") {
-                    y = e1.y;
-                }
-                if (typeof e2.x !== "undefined") {
-                    x = e2.x;
-                } else if (typeof e2.y !== "undefined") {
-                    y = e2.y;
-                }
                 ChartManager.chartContainer.initialize(id);
-                ChartManager.chartContainer.push(x, y);
+                ChartManager.chartContainer.push(msg.payload.graph.x, msg.payload.graph.y);
             });
         },
-        noisetuberegist: function (e1, e2) {
-            var msg = {};
-            $.extend(msg, e1, e2);
+        noisetuberegist: function (msg) {
+
             var apikey = "99cc75a0920d4420898905b6e9a14bb86ffe9a09";
-            var newSessionURL = "http://www.noisetube.net/api/newsession?key="+apikey;
-            var updateURL = "http://www.noisetube.net/api/update?key="+apikey+"&l=geo:"+msg.payload.position.coords.latitude+","+msg.payload.position.coords.longitude+"&db="+msg.payload.db;
-            var endSessionURL = "http://www.noisetube.net/api/endsesssion?key="+apikey;
-            fetch(newSessionURL).then(response =>{console.log("newSession");
-                fetch(updateURL).then(response =>{console.log("updateSession");
-                    fetch(endSessionURL).then(response =>{console.log("endSession");
+            var newSessionURL = "http://www.noisetube.net/api/newsession?key=" + apikey;
+            var updateURL = "http://www.noisetube.net/api/update?key=" + apikey + "&l=geo:" + msg.payload.position.coords.latitude + "," + msg.payload.position.coords.longitude + "&db=" + msg.payload.db;
+            var endSessionURL = "http://www.noisetube.net/api/endsesssion?key=" + apikey;
+            $.get(newSessionURL, function (data) { console.log(data) }).then(data => {
+                console.log("newSession");
+                console.log(data);
+                $.get(updateURL).then(response => {
+                    console.log("updateSession");
+                    console.log(response);
+                    $.get(endSessionURL).then(response => {
+                        console.log("endSession");
+                        console.log(response);
                     })
                 })
             })
-        },
-        noisemap: function (e1, e2) {
-            require(['GoogleMapManager'], function (GoogleMapManager) {
 
-                var id = "noisemap-google";
-                var position;
-                var noise;
-                if (e1.coords) {
-                    position = e1;
-                    noise = e2;
-                } else if (e2.coords) {
-                    position = e2;
-                    noise = e1;
-                }
+        },
+        noisetubeget: function (msg) {
+            var onLoaded = function (e) {
+                console.log(e);
+            }
+            var apikey = "99cc75a0920d4420898905b6e9a14bb86ffe9a09";
+            //var searchURL = "http://www.noisetube.net/api/search.json?key=" + apikey + "&box=" + msg.payload.position.box.lat1 + "," + msg.payload.position.box.lng1 + "," + msg.payload.position.box.lat2 + "," + msg.payload.position.box.lng2;
+            var searchURL = "noisetube/noiseinfo.json";
+            console.log(searchURL);
+            return Bacon.fromPromise($.get(searchURL).then(data => { msg.payload.position.boxnoise = data; return msg }));
+
+            /*
+            fetch(searchURL, { mode: 'no-cors' }).then(response => {
+                msg.payload.boxnoise = response;
+                console.log("get noise infomation");
+                console.log(msg);
+                return msg;
+            })
+            */
+        },
+        noisemaprealtime: function (msg) {
+            require(['GoogleMapManager'], function (GoogleMapManager) {
+                console.log(msg);
+                var id = "noisemap-google-realtime";
 
                 GoogleMapManager.noisemap.initialize(id);
-                GoogleMapManager.noisemap.push(position, noise);
+                GoogleMapManager.noisemap.push(id, msg.payload.position, msg.payload.db);
             });
         },
-        combine: function (e1, e2) {
-            if (typeof e1 !== "undefined" && typeof e2 !== "undefined") {
-                console.log(e1);
-                console.log(e2);
-                var msg = {};
-                msg.e1 = e1;
-                msg.e2 = e2;
-                return msg;
-            }
+        noisemappast: function (msg) {
+            require(['GoogleMapManager'], function (GoogleMapManager) {
+                console.log(msg);
+                var id = "noisemap-google-past";
+                console.log(GoogleMapManager);
+                GoogleMapManager.noisemap.initialize(id);
+                msg.payload.position.boxnoise.forEach(function (boxnoise) {
+                    var position = {};
+                    position.coords = {};
+                    position.coords.latitude = boxnoise.lat;
+                    position.coords.longitude = boxnoise.lng;
+                    GoogleMapManager.noisemap.push(id, position, msg.payload.db);
+                }, this);
+            });
         },
+        combine: function (msg) {
+            console.log(msg);
+            return msg;
+        },
+        boxRangePosition: function (msg) {
+            var lat1 = msg.payload.position.coords.latitude;
+            var lng1 = msg.payload.position.coords.longitude;
+            msg.payload.position.box = {};
+            msg.payload.position.box.lat1 = lat1;
+            msg.payload.position.box.lat2 = lat1 + 0.0000001;
+            msg.payload.position.box.lng1 = lng1;
+            msg.payload.position.box.lng2 = lng1 + 0.0000001;
 
+            return msg
+        },
+        noisePastInformationDisplay: function (msg) {
+            console.log("oisePastInformationDisplay");
+            console.log(msg);
+            //$("#noisemap-past-information").empty();
+            $("#noisemap-past-information").append(
+                "<tr>" +
+                "<td>lat:" + msg.payload.position.coords.latitude + "---</td>" +
+                "<td>lng:" + msg.payload.position.coords.longitude + "---</td>" +
+                "<td>db:" + msg.payload.db + "</td>" +
+                "<tr>");
+            if ($("#noisemap-past-information").children().length > 20) {
+                $("#noisemap-past-information").children()[0].remove();
+                $("#noisemap-past-information").children()[0].remove();
+            }
+            console.log($("#noisemap-past-information").children());
+        },
+        averageNoise: function (msgs) {
+            var average = function (array) {
+                var sum = 0;
+                $.each(array, function(){
+                    console.log(this);
+                    sum += this.payload.db;
+                });
+                return sum/array.length;
+            }
+            $("#noise-average").empty();
+            $("#noise-average").append("<p>" + average(msgs) + "</p>");
+        },
     }
-
 });

@@ -3,7 +3,7 @@
 //Web サーバーが Listen する IP アドレス 
 var LISTEN_IP = '127.0.0.1'; 
 //Web サーバーが Listen する ポート 
-var LISTEN_PORT = 3000; 
+var LISTEN_PORT = 4000; 
 //ファイル名が指定されない場合に返す既定のファイル名 
 var DEFAULT_FILE = "test.html"; 
 

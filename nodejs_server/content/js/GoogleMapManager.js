@@ -1,12 +1,12 @@
 define([], function () {
     return {
-        noisemap: {
+        noisemap:{
             id: "",
             dps: [],
             instance: {},
-            map: function () {
+            map: function (id) {
                 self = this;
-                return new google.maps.Map(document.getElementById(self.id), {
+                return new google.maps.Map(document.getElementById(id), {
                     zoom: 13,
                     center: { lat: 37.090, lng: -95.712 },
                     mapTypeId: google.maps.MapTypeId.TERRAIN
@@ -14,13 +14,14 @@ define([], function () {
             },
             initialize: function (id) {
                 console.log(this.instance);
-                if (!this.instance.data) {
-                    console.log("initialize google map")
-                    this.id = id;
-                    this.instance = this.map();
+                if (!this.instance[id]) {
+                    console.log("initialize google map");
+                    this.instance[id] = {};
+                    this.instance[id] = this.map(id);
                 }
             },
-            push: function (position, noise) {
+            push: function (id,position, noise) {
+                console.log("noise:"+noise);
                 var self=this;
                 var pos = {
                     lat: position.coords.latitude,
@@ -38,14 +39,14 @@ define([], function () {
                     strokeWeight: 2,
                     fillColor: "#"+(-colorNum+255).toString(16)+"ffff",
                     fillOpacity: 0.35,
-                    map: self.instance,
+                    map: self.instance[id],
                     center: pos,
                     radius: 1
                 });
-                this.instance.panTo(pos);
+                this.instance[id].panTo(pos);
 
             }
 
-        }
+    }
     }
 });

@@ -1,5 +1,37 @@
 define(['IDManager'], function (IDManager) {
   return {
+    delay: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'delay/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 50, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'delay' },
+          rect: { fill: '#2ECC71' },
+          throttle: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
+    bufferWithCount: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'bufferWithCount/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 50, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'bufferWithCount' },
+          rect: { fill: '#2ECC71' },
+          bufferWithCount: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+      })
+    },
     up: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'up/' + IDManager.generateUUID(),//groupID+UUID
@@ -142,7 +174,7 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
-        soundmeter: function () {
+    soundmeter: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'soundmeter/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
@@ -158,7 +190,7 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
-            gps: function () {
+    gps: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'gps/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
@@ -191,15 +223,15 @@ define(['IDManager'], function (IDManager) {
 
       })
     },
-      noisemap: function () {
+    noisemaprealtime: function () {
       return new joint.shapes.devs.ComponentModel({
-        id: 'noisemap/' + IDManager.generateUUID(),//groupID+UUID
+        id: 'noisemaprealtime/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
         attrs: {
-          '.label': { text: 'noisemap' },
+          '.label': { text: 'noisemaprealtime' },
           rect: { fill: '#2ECC71' },
           combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
@@ -224,6 +256,107 @@ define(['IDManager'], function (IDManager) {
         }
 
       })
-    }
+    },
+    noisetuberegist: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'noisetuberegist/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: [],
+        attrs: {
+          '.label': { text: 'noisetuberegist' },
+          rect: { fill: '#2ECC71' },
+          combine: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+    noisemappast: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'noisemappast/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: [],
+        attrs: {
+          '.label': { text: 'noisemappast' },
+          rect: { fill: '#2ECC71' },
+          combine: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+    noisetubeget: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'noisetubeget/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'noisetubeget' },
+          rect: { fill: '#2ECC71' },
+          combine: true,
+          asynchronous: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+    boxRangePosition: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'boxRangePosition/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: ['out'],
+        attrs: {
+          '.label': { text: 'boxRangePosition' },
+          rect: { fill: '#2ECC71' },
+          combine: true,
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+    noisePastInformationDisplay: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'noisePastInformationDisplay/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: [],
+        attrs: {
+          '.label': { text: 'noisePastInformationDisplay' },
+          rect: { fill: '#2ECC71' },
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
+        averageNoise: function () {
+      return new joint.shapes.devs.ComponentModel({
+        id: 'averageNoise/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 300, y: 50 },
+        size: { width: 90, height: 90 },
+        inPorts: ['in'],
+        outPorts: [],
+        attrs: {
+          '.label': { text: 'averageNoise' },
+          rect: { fill: '#2ECC71' },
+          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+        }
+
+      })
+    },
   }
 });
