@@ -16,7 +16,24 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     width: $('#myholder').width(),
     model: graph,
     gridSize: 1,
-    defaultLink: new joint.dia.Link({
+     snapLinks: true,
+    linkPinning: false,
+    embeddingMode: true,
+    highlighting: {
+        'default': {
+            name: 'stroke',
+            options: {
+                padding: 6
+            }
+        },
+        'embedding': {
+            name: 'addClass',
+            options: {
+                className: 'highlighted-parent'
+            }
+        }
+    },
+    defaultLink: new joint.shapes.devs.Link({
       attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
     }),
     validateConnection: function (cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
@@ -31,7 +48,12 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
       // Note that this is the default behaviour. Just showing it here for reference.
       // Disable linking interaction for magnets marked as passive (see below `.inPorts circle`).
       return magnet.getAttribute('magnet') !== 'passive';
+    },
+      validateEmbedding: function(childView, parentView) {
+
+        return parentView.model instanceof joint.shapes.devs.Coupled;
     }
+
   });
 
   //preview editorのインスタンス
@@ -42,7 +64,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     width: "300",
     model: previewGraph,
     gridSize: 1,
-    defaultLink: new joint.dia.Link({
+    defaultLink: new joint.shapes.devs.Link({
       attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
     }),
     validateConnection: function (cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
@@ -105,11 +127,11 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     var date =component.date();
     var soundmeter = component.soundmeter();
     var chartContainer = component.chartContainer();
-    var link1 = new joint.dia.Link({
+    var link1 = new joint.shapes.devs.Link({
         source: { id: date.id },
         target: { id: chartContainer.id }
       });
-      var link2 = new joint.dia.Link({
+      var link2 = new joint.shapes.devs.Link({
         source: { id: soundmeter.id },
         target: { id: chartContainer.id }
       });
@@ -130,47 +152,47 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   var bufferWithCount = component.bufferWithCount();
   var noisePastInformationDisplay = component.noisePastInformationDisplay();
   var averageNoise = component.averageNoise();
-  var link1 = new joint.dia.Link({
+  var link1 = new joint.shapes.devs.Link({
     source: { id: gps.id },
-    target: { id: combine.id }
+    target: { id: combine.id },
   });
-  var link2 = new joint.dia.Link({
+  var link2 = new joint.shapes.devs.Link({
     source: { id: soundmeter.id },
     target: { id: combine.id }
   });
-  var link3 = new joint.dia.Link({
+  var link3 = new joint.shapes.devs.Link({
     source: { id: combine.id },
     target: { id: delay1.id }
   });
-  var link4 = new joint.dia.Link({
+  var link4 = new joint.shapes.devs.Link({
     source: { id: delay1.id },
     target: { id: boxRangePosition.id }
   });
-  var link5 = new joint.dia.Link({
+  var link5 = new joint.shapes.devs.Link({
     source: { id: combine.id },
     target: { id: noisemaprealtime.id }
   });
-  var link6 = new joint.dia.Link({
+  var link6 = new joint.shapes.devs.Link({
     source: { id: noisetubeget.id },
     target: { id: noisemappast.id }
   });
-  var link7 = new joint.dia.Link({
+  var link7 = new joint.shapes.devs.Link({
     source: { id: combine.id },
     target: { id: noisetuberegist.id }
   });
-  var link8 = new joint.dia.Link({
+  var link8 = new joint.shapes.devs.Link({
     source: { id: boxRangePosition.id },
     target: { id: noisetubeget.id }
   });
-  var link9 = new joint.dia.Link({
+  var link9 = new joint.shapes.devs.Link({
     source: { id: combine.id },
     target: { id: noisePastInformationDisplay.id }
   });
-   var link10 = new joint.dia.Link({
+   var link10 = new joint.shapes.devs.Link({
     source: { id: combine.id },
     target: { id: bufferWithCount.id }
   });
-   var link11 = new joint.dia.Link({
+   var link11 = new joint.shapes.devs.Link({
     source: { id: bufferWithCount.id },
     target: { id: averageNoise.id }
   });

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7fWRSN_hGgq5QAUMUb9Xi0bO5MiUnpEg" type="text/javascript"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="library/css/joint.min.css" />
+	<link rel="stylesheet" href="library/jquery-ui-1.12.1.custom/jquery-ui.css" />
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/shapes.devs.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js" type="text/javascript"></script>
+	<script src="library/js/jquery.js" type="text/javascript"></script>
+	<script src="library/js/lodash.js" type="text/javascript"></script>
+	<script src="library/js/backbone.js" type="text/javascript"></script>
+	<script src="library/js/joint.min.js" type="text/javascript"></script>
+	<script src="library/js/bacon.js" type="text/javascript"></script>
+	<script src="library/jquery-ui-1.12.1/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="library/js/jquery.ui.touch-punch.min.js" type="text/javascript"></script>
+	<script src="library/js/jquery.xdomainajax.js" type="text/javascript"></script>
+</head>
+
+<body>
+	<div id="tabs">
+		<ul>
+			<li><a href="#tabs-1">Flow Editor</a></li>
+			<li><a href="#tabs-2">Test Place</a></li>
+			<li><a href="#tabs-3">Component Creator</a></li>
+		</ul>
+		<div id="tabs-1">
+			<div class="clearfix">
+				<div id="accordion-resizer-component" class="ui-widget-content">
+					<div class="accordion">
+						<h3>Basic Component</h3>
+						<div>
+							<ul class="sortable">
+								<li id="delay" class="ui-state-default draggableComponent" title="ms遅延させる">delay</li>
+								<li id="bufferWithCount" class="ui-state-default draggableComponent" title="任意の数bufferされたらフラッシュする">bufferWithCount</li>
+							</ul>
+						</div>
+						<h3>Test Component</h3>
+						<div>
+
+							<ul class="sortable">
+								<li id="delay" class="ui-state-default draggableComponent" title="ストリームを遅延させる ms">delay</li>
+								<li id="up" class="ui-state-default draggableComponent" title="1秒ごとに1を出力する">up</li>
+								<li id="down" class="ui-state-default draggableComponent" title="1秒ごとに-1を出力する">down</li>
+								<li id="multi" class="ui-state-default draggableComponent" title="入力に対して2をかけて出力する">multi</li>
+								<li id="display" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">display</li>
+								<li id="chartContainer" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">chartContainer</li>
+								<li id="noisemap" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">noisemap</li>
+								<li id="combine" class="ui-state-default draggableComponent" title="間隔の異なるデータを同期結合する">combine</li>
+								<li id="date" class="ui-state-default draggableComponent" title="一定間隔ごとにのtimestampを付加する">date</li>
+								<li id="random" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">random</li>
+								<li id="boxRangePosition" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">boxRangePosition</li>
+								<li id="noisePastInformationDisplay" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">noisePastInformationDisplay</li>
+								<li id="averageNoise" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">averageNoise</li>
+							</ul>
+						</div>
+						<h3>Sensor Component</h3>
+						<div>
+							<ul class="sortable">
+								<li id="phoneAccel" class="ui-state-default draggableComponent" title="加速度を出力する">phoneAccel</li>
+								<li id="accel" class="ui-state-default draggableComponent" title="加速度を出力する">accel</li>
+								<li id="temp" class="ui-state-default draggableComponent" title="温度を出力する">temp</li>
+								<li id="soundmeter" class="ui-state-default draggableComponent" title="デシベル値を付加する">soundmeter</li>
+								<li id="gps" class="ui-state-default draggableComponent" title="位置座標を付加する">gps</li>
+							</ul>
+						</div>
+						<h3>Advanced Component</h3>
+						<div>
+							<ul id="advancedComponent" class="sortable">
+							</ul>
+						</div>
+						<h3>API Component</h3>
+						<div>
+							<ul id="apiComponent" class="sortable">
+								<li id="noisetuberegist" class="ui-state-default draggableComponent" title="">NoiseTubeRegist</li>
+								<li id="noisetubeget" class="ui-state-default draggableComponent" title="">NoiseTubeGet</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div id="droppable">
+					<button id="deploy" class="ui-state-default"> Deploy </button>
+					<div id="myholder"></div>
+				</div>
+			</div>
+		</div>
+		<div id="tabs-2">
+			<button id="start" class="ui-state-default"> start </button>
+			<fieldset>
+				<legend>chartContainer-graph-1</legend>
+				<div id="chartContainer-graph-1" class="chartContainer-graph"></div>
+			</fieldset>
+
+			<fieldset>
+				<legend>chartContainer-graph-2</legend>
+				<div id="chartContainer-graph-2" class="chartContainer-graph"></div>
+			</fieldset>
+			<fieldset>
+				<legend>リアルタイムデータ</legend>
+				<div id="noisemap-google-realtime" class="noisemap-google"></div>
+			</fieldset>
+
+			<fieldset>
+				<legend>過去データ</legend>
+				<div id="noisemap-google-past" class="noisemap-google"></div>
+			</fieldset>
+
+			<fieldset>
+				<legend>数値情報</legend>
+				<div id="noisemap-position"></div>
+				<div id="noisemap-position-plot"></div>
+			</fieldset>
+			<fieldset>
+				<legend>過去10件のデータ</legend>
+				<div id="noisemap-past-information"></div>
+			</fieldset>
+			<fieldset>
+				<legend>過去10件のデータ</legend>
+				<div id="noise-average"></div>
+			</fieldset>
+			<p>
+				Counter : <span id="counter">0</span>
+			</p>
+			<p>
+				Timer : <span id="timer">0</span>
+			</p>
+		</div>
+		<div id="tabs-3">
+			<div class="clearfix">
+				<div id="accordion-resizer-option" class="ui-widget-content">
+					<div class="accordion">
+						<h3>Basic Settings</h3>
+						<div>
+
+							<label for="component-name">Component Name</label>
+							<input type="text" id="component-name">
+
+							<p>
+								<div class="widget">
+									<fieldset>
+										<legend>Select a Component Type: </legend>
+										<label for="in-out">IN&OUT</label>
+										<input type="radio" name="inout-type" id="in-out">
+										<label for="only-in">OnlyIN</label>
+										<input type="radio" name="inout-type" id="only-in">
+										<label for="only-out">OnlyOUT</label>
+										<input type="radio" name="inout-type" id="only-out">
+									</fieldset>
+								</div>
+							</p>
+							<fieldset>
+								<legend>preview component</legend>
+								<div id="previewPaper"></div>
+							</fieldset>
+						</div>
+						<h3>Advanced Settings</h3>
+						<div>
+						</div>
+					</div>
+				</div>
+				<div style="float:left;">
+<fieldset>
+	<legend>Component Editor</legend>
+	<div id="editor"></div>
+	<button id="create-component" class="ui-state-default"> Create Component </button>
+</fieldset>
+<p>
+	<fieldset>
+		<legend>Log</legend>
+		<div id="component_editor_log"></div>
+	</fieldset>
+</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+
+<head>
+	<script src="library/ace/src-min-noconflict/ace.js" type="text/javascript"></script>
+	<script src="library/ace/src-min-noconflict/mode-xml.js" type="text/javascript"></script>
+	<script data-main="js/main.js" src="library/js/require.js" type="text/javascript"></script>
+</head>
+
+</html>

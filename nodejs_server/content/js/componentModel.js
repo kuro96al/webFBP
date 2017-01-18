@@ -23,6 +23,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         '.label': {
                             'ref-y': 100
                         },
+                        'image': { 'ref-x': 20, 'ref-y': 20, ref: 'rect', width: 48, height: 48 },
                         asynchronous: false,
                         combine: false,
                         rect: {
@@ -106,8 +107,8 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         console.log(functionBody);
                         self.compInstanceCode[selfChild.model.id] = new Function("msg", functionBody);
                         */
-                        console.log(eval("(" + selfChild.editor.getValue() +  ")"))
-                        self.compInstanceCode[selfChild.model.id] = eval("(" + selfChild.editor.getValue() +  ")");
+                        console.log(eval("(" + selfChild.editor.getValue() + ")"))
+                        self.compInstanceCode[selfChild.model.id] = eval("(" + selfChild.editor.getValue() + ")");
                     });
                     // Update the box position whenever the underlying model changes.
                     this.model.on('change', this.updateBox, this);

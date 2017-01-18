@@ -1,5 +1,16 @@
 define(['IDManager'], function (IDManager) {
   return {
+    couple: function () {
+      return new joint.shapes.devs.Coupled({
+        id: 'couple/' + IDManager.generateUUID(),//groupID+UUID
+        position: { x: 50, y: 50 },
+        size: { width: 300, height: 300 },
+        attrs: {
+          '.label': { text: 'couple' },
+          rect: { fill: '#9E1C21' }
+        }
+      })
+    },
     delay: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'delay/' + IDManager.generateUUID(),//groupID+UUID
@@ -183,6 +194,7 @@ define(['IDManager'], function (IDManager) {
         outPorts: ['out'],
         attrs: {
           '.label': { text: 'soundmeter' },
+          image: { 'xlink:href': 'icon/Music/microphone-48.png' },
           rect: { fill: '#2ECC71' },
           asynchronous: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
@@ -245,6 +257,7 @@ define(['IDManager'], function (IDManager) {
         id: 'combine/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
         size: { width: 90, height: 90 },
+        z:0,
         inPorts: ['in'],
         outPorts: ['out'],
         attrs: {
@@ -342,7 +355,7 @@ define(['IDManager'], function (IDManager) {
 
       })
     },
-        averageNoise: function () {
+    averageNoise: function () {
       return new joint.shapes.devs.ComponentModel({
         id: 'averageNoise/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
