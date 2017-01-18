@@ -325,7 +325,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   });
 
   //toggleの関数定義とバインドハンドラ
-  function handleName(e) {
+  function nameChangeHander(e) {
     console.log("component name is changed");
     stationeryComponent.attr('.label/text', $("#component-name").val());
     previewComponent.attr('.label/text', $("#component-name").val());
@@ -336,7 +336,13 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     console.log(stationeryComponent);
   }
 
-  function handleInOutType(e) {
+    function iconChangeHander(e) {
+    stationeryComponent.attr("image/xlink:href", $("select").data("picker").selected_values());
+    previewComponent.attr("image/xlink:href",  $("select").data("picker").selected_values());
+    console.log(stationeryComponent);
+  }
+
+  function InOutTypeChangeHandler(e) {
     console.log("inout type is changed");
     console.log(e.currentTarget.id);
 
@@ -365,10 +371,12 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
 
     changeInOut[e.currentTarget.id]();
     console.log(stationeryComponent);
+    console.log($("select").data("picker").selected_values());
   }
 
-  $("#component-name").on("change", handleName);
-  $("[name='inout-type']").on("change", handleInOutType);
+  $("#component-name").on("change", nameChangeHander);
+  $("[name='inout-type']").on("change", InOutTypeChangeHandler);
+    $("select").on("change", iconChangeHander);
   //Ace Editor
 
   var editor = ace.edit("editor");
@@ -378,4 +386,11 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   editor.gotoLine(1);
   editor.resize();
 
+  //icon選択(image picker) 
+  $("select").imagepicker({
+              hide_select : false
+  });
+  //見栄えが悪いのでプルダウンメニューの削除
+  $(".ui-selectmenu-button").remove();
 });
+
