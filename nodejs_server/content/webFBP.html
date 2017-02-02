@@ -30,21 +30,22 @@
 		</ul>
 		<div id="tabs-1">
 			<div class="clearfix">
-				<div id="accordion-resizer-component" class="ui-widget-content">
+				<div id="accordion-resizer-option-pallet" class="ui-widget-content">
 					<div class="accordion">
 						<h3>Basic Component</h3>
 						<div>
 							<ul class="sortable">
-								<li id="couple" class="ui-state-default draggableComponent" title="階層化する">couple</li>
+								<li id="couple" class="ui-state-default draggableComponent" title="階層化する">soundmeter</li>
 								<li id="delay" class="ui-state-default draggableComponent" title="ms遅延させる">delay</li>
-								<li id="bufferWithCount" class="ui-state-default draggableComponent" title="任意の数bufferされたらフラッシュする">bufferWithCount</li>
+								<li id="combine" class="ui-state-default draggableComponent" title="間隔の異なるデータを同期結合する">combine</li>
+								<li id="slidingWindow" class="ui-state-default draggableComponent" title="任意の数bufferされたらフラッシュする">slidingWindow</li>
 							</ul>
 						</div>
+						<!--
 						<h3>Test Component</h3>
 						<div>
 
 							<ul class="sortable">
-								<li id="delay" class="ui-state-default draggableComponent" title="ストリームを遅延させる ms">delay</li>
 								<li id="up" class="ui-state-default draggableComponent" title="1秒ごとに1を出力する">up</li>
 								<li id="down" class="ui-state-default draggableComponent" title="1秒ごとに-1を出力する">down</li>
 								<li id="multi" class="ui-state-default draggableComponent" title="入力に対して2をかけて出力する">multi</li>
@@ -59,6 +60,7 @@
 								<li id="averageNoise" class="ui-state-default draggableComponent" title="displayに表示されている数字に入力された値を足す">averageNoise</li>
 							</ul>
 						</div>
+						-->
 						<h3>Sensor Component</h3>
 						<div>
 							<ul class="sortable">
@@ -69,11 +71,6 @@
 								<li id="gps" class="ui-state-default draggableComponent" title="位置座標を付加する">gps</li>
 							</ul>
 						</div>
-						<h3>Advanced Component</h3>
-						<div>
-							<ul id="advancedComponent" class="sortable">
-							</ul>
-						</div>
 						<h3>API Component</h3>
 						<div>
 							<ul id="apiComponent" class="sortable">
@@ -81,6 +78,12 @@
 								<li id="noisetubeget" class="ui-state-default draggableComponent" title="">NoiseTubeGet</li>
 							</ul>
 						</div>
+						<h3>User Component</h3>
+						<div>
+							<ul id="userComponent" class="sortable">
+							</ul>
+						</div>
+					
 					</div>
 				</div>
 				<div id="droppable">
@@ -90,49 +93,34 @@
 			</div>
 		</div>
 		<div id="tabs-2">
-			<button id="start" class="ui-state-default"> start </button>
-			<fieldset>
-				<legend>chartContainer-graph-1</legend>
-				<div id="chartContainer-graph-1" class="chartContainer-graph"></div>
-			</fieldset>
-
-			<fieldset>
-				<legend>chartContainer-graph-2</legend>
-				<div id="chartContainer-graph-2" class="chartContainer-graph"></div>
-			</fieldset>
-			<fieldset>
 				<legend>リアルタイムデータ</legend>
 				<div id="noisemap-google-realtime" class="noisemap-google"></div>
 			</fieldset>
-
 			<fieldset>
 				<legend>過去データ</legend>
 				<div id="noisemap-google-past" class="noisemap-google"></div>
 			</fieldset>
-
+			<p>
+				<!--
 			<fieldset>
 				<legend>数値情報</legend>
 				<div id="noisemap-position"></div>
 				<div id="noisemap-position-plot"></div>
 			</fieldset>
+			-->
 			<fieldset>
 				<legend>過去10件のデータ</legend>
 				<div id="noisemap-past-information"></div>
 			</fieldset>
 			<fieldset>
-				<legend>過去10件のデータ</legend>
+				<legend>過去10件のノイズ平均</legend>
 				<div id="noise-average"></div>
 			</fieldset>
-			<p>
-				Counter : <span id="counter">0</span>
-			</p>
-			<p>
-				Timer : <span id="timer">0</span>
 			</p>
 		</div>
-		<div id="tabs-3">
+		<div id="tabs-3" >
 			<div class="clearfix">
-				<div id="accordion-resizer-option" class="ui-widget-content">
+				<div id="accordion-resizer-option-create" class="ui-widget-content">
 					<div class="accordion">
 						<h3>Basic Settings</h3>
 						<div>
@@ -143,7 +131,7 @@
 							<p>
 								<div class="widget">
 									<fieldset>
-										<legend>Select a Component Type: </legend>
+										<legend>Component IO Type</legend>
 										<label for="in-out">IN&OUT</label>
 										<input type="radio" name="inout-type" id="in-out">
 										<label for="only-in">OnlyIN</label>
@@ -155,12 +143,13 @@
 							</p>
 							<p>
 								<fieldset>
-									<legend>preview component</legend>
+									<legend>Preview Component</legend>
 									<div id="previewPaper"></div>
 								</fieldset>
 							</p>
 							<fieldset>
-								<legend>icon</legend>
+								<legend>Icon</legend>
+								 <div class="controlgroup">
 								<select class="image-picker show-html">
   									<option value=""></option>
   									<option data-img-src="icon/Music/microphone-48.png" value="icon/Music/microphone-48.png">Cute Kitten 1</option>
@@ -181,6 +170,7 @@
 									<option data-img-src="icon/Science/time-48.png" value="icon/Science/time-48.png">Cute Kitten 3</option>
 									<option data-img-src="icon/Users/user-48.png" value="icon/Users/user-48.png">Cute Kitten 3</option>												 
 								</select>
+								 </div>
 							</fieldset>
 						</div>
 						<h3>Advanced Settings</h3>

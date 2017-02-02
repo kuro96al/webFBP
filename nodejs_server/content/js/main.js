@@ -96,13 +96,13 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   var componentColor = [];
   componentColor.label = "#111111";
   componentColor.rect = "#111111";
-  var previewComponent = new joint.shapes.devs.Model({
+  var previewComponent = new joint.shapes.devs.ComponentModel({
     position: { x: 100, y: 100 },
     size: { width: 90, height: 90 },
     inPorts: [],
     outPorts: [],
     attrs: {
-      '.label': { text: 'stationery', 'ref-y': -20 },
+      '.label': { text: 'stationery', 'ref-y': 100 },
       rect: { fill: '#2ECC71' },
       '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
       '.outPorts circle': { fill: '#E74C3C', type: 'output' }
@@ -149,7 +149,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   var noisemappast = component.noisemappast();
   var noisetuberegist = component.noisetuberegist();
   var boxRangePosition = component.boxRangePosition();
-  var bufferWithCount = component.bufferWithCount();
+  var slidingWindow = component.slidingWindow();
   var noisePastInformationDisplay = component.noisePastInformationDisplay();
   var averageNoise = component.averageNoise();
   var link1 = new joint.shapes.devs.Link({
@@ -190,13 +190,13 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   });
    var link10 = new joint.shapes.devs.Link({
     source: { id: combine.id },
-    target: { id: bufferWithCount.id }
+    target: { id: slidingWindow.id }
   });
    var link11 = new joint.shapes.devs.Link({
-    source: { id: bufferWithCount.id },
+    source: { id: slidingWindow.id },
     target: { id: averageNoise.id }
   });
-  graph.addCells([averageNoise,noisePastInformationDisplay,bufferWithCount,boxRangePosition,gps, noisetuberegist, noisetubeget, noisemaprealtime, noisemappast, combine, delay1, soundmeter]);
+  graph.addCells([averageNoise,noisePastInformationDisplay,slidingWindow,boxRangePosition,gps, noisetuberegist, noisetubeget, noisemaprealtime, noisemappast, combine, delay1, soundmeter]);
 
   //graph.addCells([link9, link8]);
   //graph.addCells([link1, link2,link5]);
@@ -216,7 +216,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
       componentModel.compcode[$("#component-name").val()] = new Function("msg", functionBody);
       component[$("#component-name").val()] = function () { return stationeryComponent };
       console.log(stationeryComponent);
-      $("#advancedComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
+      $("#userComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
       $(".draggableComponent").draggable({
         appendTo: "body",
         helper: "clone",
@@ -287,9 +287,11 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     $(".accordion").accordion({
       heightStyle: "fill"
     });
+    
     $(".sortable").sortable({
       revert: true
     });
+    $( "#sortable" ).disableSelection(); //おまけ：テキスト選択を無効にする
     $("#accordion-resizer").resizable({
       minHeight: 140,
       minWidth: 200,
@@ -380,7 +382,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   //Ace Editor
 
   var editor = ace.edit("editor");
-  editor.setTheme("ace/theme/monokai");
+  editor.setTheme("ace/theme/solarized_light");
   editor.getSession().setMode("ace/mode/javascript");
   editor.insert("Something cool");
   editor.gotoLine(1);
@@ -394,3 +396,6 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
   $(".ui-selectmenu-button").remove();
 });
 
+ $( function() {
+    $( ".controlgroup" ).controlgroup();
+  } );

@@ -1,5 +1,5 @@
 .joint-theme-default text {
-    text-transform: uppercase;
+    
     font-weight: 800;
     font-family: "Source Sans Pro", sans-serif;
 }
@@ -28,6 +28,7 @@
 }
 
 .joint-theme-default .port-label {
+    text-transform: uppercase;
     fill: #7c68fc;
     text-decoration: none;
 }
@@ -38,6 +39,17 @@
 
 .joint-theme-default .element.devs.Atomic.joint-theme-default .label {
     fill: #feb663;
+}
+
+.element.devs.Coupled.joint-theme-default .body{
+    fill: rgba(255,255,255,0);
+    fill-opacity:"0";
+    stroke: #feb663;
+    stroke-width: 6px;
+}
+.element.devs.Coupled.joint-theme-default .label{
+    stroke: #feb663;
+    font-size: 16px;
 }
 
 /* links */

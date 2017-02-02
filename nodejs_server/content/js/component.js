@@ -4,7 +4,7 @@ define(['IDManager'], function (IDManager) {
       return new joint.shapes.devs.Coupled({
         id: 'couple/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 50, y: 50 },
-        size: { width: 300, height: 300 },
+        size: { width: 500, height: 500 },
         attrs: {
           '.label': { text: 'couple' },
           rect: { fill: '#9E1C21' }
@@ -27,15 +27,15 @@ define(['IDManager'], function (IDManager) {
         }
       })
     },
-    bufferWithCount: function () {
+    slidingWindow: function () {
       return new joint.shapes.devs.ComponentModel({
-        id: 'bufferWithCount/' + IDManager.generateUUID(),//groupID+UUID
+        id: 'slidingWindow/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 50, y: 50 },
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
         attrs: {
-          '.label': { text: 'bufferWithCount' },
+          '.label': { text: 'slidingWindow' },
           rect: { fill: '#2ECC71' },
           bufferWithCount: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },

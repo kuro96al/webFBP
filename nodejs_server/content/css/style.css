@@ -9,25 +9,32 @@
 		}
 		
 		.draggableComponent {
-			width: 80px;
-			height: 20px;
+			width: 200;
+			height: 300x;
 			padding: 0.5em;
-			float: left;
+			float: center;
 			margin: 10px 30px 10px 0;
 		}
 		
 		#accordion-resizer-component {
 			padding: 10px;
-			width: 300px;
-			height: 600px;
+			width: 600px;
+			height: 900px;
 			float: left;
 			display: flex;
 		}
 		
-		#accordion-resizer-option {
+		#accordion-resizer-option-pallet {
 			padding: 10px;
-			width: 700px;
+			width: 400px;
 			height: 600px;
+			float: left;
+			display: flex;
+		}
+		#accordion-resizer-option-create {
+			padding: 10px;
+			width: 600px;
+			height: 900px;
 			float: left;
 			display: flex;
 		}
@@ -60,8 +67,8 @@
 		}
 		
 		#editor {
-			height: 500px;
-			width: 500px;
+			height: 700px;
+			width: 1000px;
 			top: 0;
 			right: 0;
 			bottom: 0;
@@ -141,3 +148,6 @@
     cursor: pointer;
 	 z-index: -1;
 }
+
+.sortable { list-style-type: none; margin: 0; padding: 0; width: 50%; }
+.sortable li {margin: 0 3px 3px 3px;padding: 0.4em;padding-left: 1.5em;font-size: 1.4em;width:250px}

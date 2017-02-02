@@ -3,7 +3,7 @@ define(function (ChartManager) {
         delay: function () {
             return 10000;
         },
-        bufferWithCount: function () {
+        slidingWindow: function () {
             return 10;
         },
         up: function () {
