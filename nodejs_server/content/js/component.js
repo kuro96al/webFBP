@@ -6,7 +6,7 @@ define(['IDManager'], function (IDManager) {
         position: { x: 50, y: 50 },
         size: { width: 500, height: 500 },
         attrs: {
-          '.label': { text: 'couple' },
+          '.label': { text: 'Couple' },
           rect: { fill: '#9E1C21' }
         }
       })
@@ -19,7 +19,7 @@ define(['IDManager'], function (IDManager) {
         inPorts: ['in'],
         outPorts: ['out'],
         attrs: {
-          '.label': { text: 'delay' },
+          '.label': { text: 'PeriodicScan' },
           rect: { fill: '#2ECC71' },
           throttle: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
@@ -35,7 +35,7 @@ define(['IDManager'], function (IDManager) {
         inPorts: ['in'],
         outPorts: ['out'],
         attrs: {
-          '.label': { text: 'slidingWindow' },
+          '.label': { text: 'SlidingWindow' },
           rect: { fill: '#2ECC71' },
           bufferWithCount: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
@@ -261,7 +261,7 @@ define(['IDManager'], function (IDManager) {
         inPorts: ['in'],
         outPorts: ['out'],
         attrs: {
-          '.label': { text: 'combine' },
+          '.label': { text: 'Combine' },
           rect: { fill: '#2ECC71' },
           combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
