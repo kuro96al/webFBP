@@ -18,10 +18,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
+        throttle: true,
         attrs: {
           '.label': { text: 'PeriodicScan' },
           rect: { fill: '#2ECC71' },
-          throttle: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -34,10 +34,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
+        bufferWithCount: true,
         attrs: {
           '.label': { text: 'SlidingWindow' },
           rect: { fill: '#2ECC71' },
-          bufferWithCount: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -176,10 +176,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        asynchronous: true,
         attrs: {
           '.label': { text: 'temp' },
           rect: { fill: '#2ECC71' },
-          asynchronous: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -192,11 +192,11 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        asynchronous: true,
         attrs: {
           '.label': { text: 'soundmeter' },
           image: { 'xlink:href': 'icon/Music/microphone-48.png' },
           rect: { fill: '#2ECC71' },
-          asynchronous: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -209,10 +209,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        asynchronous: false,
         attrs: {
           '.label': { text: 'gps' },
           rect: { fill: '#2ECC71' },
-          asynchronous: false,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -225,10 +225,11 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        combine: true,
         attrs: {
           '.label': { text: 'chartContainer' },
           rect: { fill: '#2ECC71' },
-          combine: true,
+
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -242,10 +243,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        combine: true,
         attrs: {
           '.label': { text: 'noisemaprealtime' },
           rect: { fill: '#2ECC71' },
-          combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -257,13 +258,13 @@ define(['IDManager'], function (IDManager) {
         id: 'combine/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
         size: { width: 90, height: 90 },
-        z:0,
+        z: 0,
         inPorts: ['in'],
         outPorts: ['out'],
+        combine: true,
         attrs: {
           '.label': { text: 'Combine' },
           rect: { fill: '#2ECC71' },
-          combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -277,10 +278,11 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        combine: true,
         attrs: {
           '.label': { text: 'noisetuberegist' },
           rect: { fill: '#2ECC71' },
-          combine: true,
+
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -294,10 +296,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        combine: true,
         attrs: {
           '.label': { text: 'noisemappast' },
           rect: { fill: '#2ECC71' },
-          combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -311,11 +313,11 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
+        combine: true,
+        asynchronous: true,
         attrs: {
           '.label': { text: 'noisetubeget' },
           rect: { fill: '#2ECC71' },
-          combine: true,
-          asynchronous: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }
@@ -329,10 +331,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
+        combine: true,
         attrs: {
           '.label': { text: 'boxRangePosition' },
           rect: { fill: '#2ECC71' },
-          combine: true,
           '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
           '.outPorts circle': { fill: '#E74C3C', type: 'output' }
         }

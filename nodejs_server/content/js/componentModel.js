@@ -26,6 +26,8 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         'image': { 'ref-x': 20, 'ref-y': 20, ref: 'rect', width: 48, height: 48 },
                         asynchronous: false,
                         combine: false,
+                        bufferWithCount: false,
+                        throttle:false,
                         rect: {
                             stroke: '#d1d1d1',
                             fill: {
@@ -61,6 +63,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                 template: [
                     '<div class="html-element">',
                     '<button class="delete">x</button>',
+                    '<button class="setting-toggle-button">s</button>',
                     '<button class="script">js</button>',
                     '<div class="main-script-editor" hidden>',
                     '<div class="btn-group"></div>',
@@ -71,7 +74,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                 editor: {},
                 initialize: function () {
                     var selfChild = this;
-                    _.bindAll(this, 'updateBox', 'showSctipt');
+                    _.bindAll(this, 'updateBox', 'showSctipt', 'settingToggle');
                     joint.dia.ElementView.prototype.initialize.apply(this, arguments);
 
                     this.$box = $(_.template(this.template)());
@@ -110,6 +113,10 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         console.log(eval("(" + selfChild.editor.getValue() + ")"))
                         self.compInstanceCode[selfChild.model.id] = eval("(" + selfChild.editor.getValue() + ")");
                     });
+
+                    //initialize setting
+                    //console.log("this component name is ", this.model.attr('.label/text'));
+                    this.$box.find('.setting-toggle-button').on('click', this.settingToggle);
                     // Update the box position whenever the underlying model changes.
                     this.model.on('change', this.updateBox, this);
                     // Remove the box when the model gets removed from the graph.
@@ -118,6 +125,8 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
 
 
                     this.updateBox();
+
+                    //要素を前面に移動
                 },
                 render: function () {
                     joint.dia.ElementView.prototype.render.apply(this, arguments);
@@ -150,6 +159,17 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                     } else {
                         this.$box.find(".main-script-editor").toggle();
                     }
+                },
+                settingToggle: function () {
+                    var self = this;
+                    var settingChangeHander = function (e) {
+                        console.log("this component name is ", self.model.attr('.label/text'));
+                        self.model.attr('.label/text', $('#setting-component-name').val());
+                    };
+                    $('#setting-component-name').val(this.model.attr('.label/text'));
+                    $("#apply-setting").off();
+                    $("#apply-setting").on("click", settingChangeHander);
+
                 }
             })
         }

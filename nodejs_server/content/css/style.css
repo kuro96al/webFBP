@@ -98,9 +98,10 @@
 .noisemap-google{
      width: 500px;
      height: 250px;
-     margin: 0 auto;
 }
-
+.map-left{
+	float: left;
+}
 .html-element {
     position: absolute;
     /* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
@@ -149,5 +150,23 @@
 	 z-index: -1;
 }
 
+.html-element button.setting-toggle-button {
+    color: white;
+    border: none;
+    background-color: #00392B;
+    border-radius: 30px;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: middle;
+    position: relative;
+    top: -15px;
+    left: 60px;
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+    cursor: pointer;
+	 z-index: -1;
+}
 .sortable { list-style-type: none; margin: 0; padding: 0; width: 50%; }
 .sortable li {margin: 0 3px 3px 3px;padding: 0.4em;padding-left: 1.5em;font-size: 1.4em;width:250px}

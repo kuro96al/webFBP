@@ -73,7 +73,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                 //源流のとき
                 if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
                     console.log(element);
-                    if (element.attributes.attrs.asynchronous) {
+                    if (element.attributes.asynchronous) {
                         allInConnectedElementPromiseArray.push(compcode[element.id]().then(function (value) {
                             self.allInConnectedElementList[element.id] = value;
                         })
@@ -105,14 +105,14 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                         self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].onValue(compcode[element.id]);
                                         console.log(elementID + "--->" + element.id);
                                     } else {
-                                        if (element.attributes.attrs.throttle) {
+                                        if (element.attributes.throttle) {
                                             self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].throttle(compcode[element.id]());
                                             console.log(elementID + "--->" + element.id);
-                                        } else if (element.attributes.attrs.bufferWithCount) {
+                                        } else if (element.attributes.bufferWithCount) {
                                             self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].slidingWindow(compcode[element.id](),compcode[element.id]());
                                             console.log(elementID + "--->" + element.id);
                                         } else {
-                                            if (!element.attributes.attrs.asynchronous) {
+                                            if (!element.attributes.asynchronous) {
                                                 console.log(elementID);
                                                 self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].map(compcode[element.id]);
                                                 console.log(elementID + "--->" + element.id);
@@ -151,7 +151,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                 Object.keys(self.allInConnectedElementList).forEach(function (elementID) {
                                     if (link.getSourceElement().id == elementID) {
                                         if (mergeFlow == null) {
-                                            if (!element.attributes.attrs.combine) {
+                                            if (!element.attributes.combine) {
                                                 mergeFlow = self.allInConnectedElementList[elementID];
                                                 console.log("create mergeFlow: " + elementID);
                                             } else {
@@ -159,7 +159,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                                 console.log("create combineArray: " + elementID);
                                             }
                                         } else {
-                                            if (!element.attributes.attrs.combine) {
+                                            if (!element.attributes.combine) {
                                                 mergeFlow = mergeFlow.merge(self.allInConnectedElementList[elementID]);
                                                 console.log("merge: " + elementID)
                                             } else {
@@ -172,7 +172,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                 });
                             });
                             if (typeof element.ports.out === "undefined") {
-                                if (!element.attributes.attrs.combine) {
+                                if (!element.attributes.combine) {
                                     self.allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[element.id]);
                                     console.log("merged flow" + "--->" + element.id);
                                 } else {
@@ -184,11 +184,11 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                 }
 
                             } else {
-                                if (!element.attributes.attrs.combine) {
-                                    if (element.attributes.attrs.throttle) {
+                                if (!element.attributes.combine) {
+                                    if (element.attributes.throttle) {
                                         self.allInConnectedElementList[element.id] = mergeFlow.throttle(compcode[element.id]());
                                         console.log("merge throttle flow" + "--->" + element.id);
-                                    } else if (element.attributes.attrs.bufferWithCount) {
+                                    } else if (element.attributes.bufferWithCount) {
                                         self.allInConnectedElementList[element.id] = mergeFlow.slidingWindow(compcode[element.id](),compcode[element.id]());
                                         console.log("merge bufferWithCount flow" + "--->" + element.id);
                                     } else {
@@ -196,10 +196,10 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                         console.log("merged flow" + "--->" + element.id);
                                     }
                                 } else {
-                                    if (element.attributes.attrs.throttle) {
+                                    if (element.attributes.throttle) {
                                         self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).throttle(compcode[element.id]());
                                         console.log("combine throttle flow" + "--->" + element.id);
-                                    } else if (element.attributes.attrs.bufferWithCount) {
+                                    } else if (element.attributes.bufferWithCount) {
                                         self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).slidingWindow(compcode[element.id](),compcode[element.id]());
                                         console.log("combine bufferWithCount flow" + "--->" + element.id);
                                     } else {

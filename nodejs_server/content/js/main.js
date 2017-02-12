@@ -1,4 +1,4 @@
-require(['component', 'componentModel', 'IDManager', 'StreamManager'], function (component, componentModel, IDManager, StreamManager) {
+require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], function (component, componentModel, IDManager, StreamManager, dnd) {
 
   //joinjs
   //コンポーネントモデルとコンポーネントモデルビューのインスタンス
@@ -16,22 +16,22 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     width: $('#myholder').width(),
     model: graph,
     gridSize: 1,
-     snapLinks: true,
+    snapLinks: true,
     linkPinning: false,
     embeddingMode: true,
     highlighting: {
-        'default': {
-            name: 'stroke',
-            options: {
-                padding: 6
-            }
-        },
-        'embedding': {
-            name: 'addClass',
-            options: {
-                className: 'highlighted-parent'
-            }
+      'default': {
+        name: 'stroke',
+        options: {
+          padding: 6
         }
+      },
+      'embedding': {
+        name: 'addClass',
+        options: {
+          className: 'highlighted-parent'
+        }
+      }
     },
     defaultLink: new joint.shapes.devs.Link({
       attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' } }
@@ -49,13 +49,14 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
       // Disable linking interaction for magnets marked as passive (see below `.inPorts circle`).
       return magnet.getAttribute('magnet') !== 'passive';
     },
-      validateEmbedding: function(childView, parentView) {
+    validateEmbedding: function (childView, parentView) {
 
-        return parentView.model instanceof joint.shapes.devs.Coupled;
+      return parentView.model instanceof joint.shapes.devs.Coupled;
     }
 
   });
 
+  paper.on('cell:pointerdown', function (cellView) { selectedElement = cellView.model });
   //preview editorのインスタンス
   var previewGraph = new joint.dia.Graph;
   var previewPaper = new joint.dia.Paper({
@@ -188,19 +189,49 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     source: { id: combine.id },
     target: { id: noisePastInformationDisplay.id }
   });
-   var link10 = new joint.shapes.devs.Link({
+  var link10 = new joint.shapes.devs.Link({
     source: { id: combine.id },
     target: { id: slidingWindow.id }
   });
-   var link11 = new joint.shapes.devs.Link({
+  var link11 = new joint.shapes.devs.Link({
     source: { id: slidingWindow.id },
     target: { id: averageNoise.id }
   });
-  graph.addCells([averageNoise,noisePastInformationDisplay,slidingWindow,boxRangePosition,gps, noisetuberegist, noisetubeget, noisemaprealtime, noisemappast, combine, delay1, soundmeter]);
+
+  graph.addCells([averageNoise, noisePastInformationDisplay, slidingWindow, boxRangePosition, gps, noisetuberegist, noisetubeget, noisemaprealtime, noisemappast, combine, delay1, soundmeter]);
 
   //graph.addCells([link9, link8]);
   //graph.addCells([link1, link2,link5]);
-  graph.addCells([link1, link2, link3, link4, link5, link6, link7,link8,link9,link10,link11]);
+  graph.addCells([link1, link2, link3, link4, link5, link6, link7, link8, link9, link10, link11]);
+  //download flow data 
+  $('#download-flow').click(function () {
+    console.log(JSON.prune(graph.getCells()));
+    var blob = new Blob([JSON.prune(graph.toJSON())], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "flow.json");
+  });
+
+  //load flow data 
+
+  var dndfile = new dnd.DnDFileController('body', function (files) {
+    var f = files[0];
+    /*
+      if (!f.type.match('application/json')) {
+        alert('Not a JSON file!');
+      }
+    */
+    var reader = new FileReader();
+    reader.onloadend = function (e) {
+      var result = JSON.parse(this.result);
+      graph.clear();
+      graph.fromJSON(result);
+      graph.getLinks().forEach(function (element) {
+        element.toFront();      
+        console.log(element);
+      })
+      console.log(result);
+    };
+    reader.readAsText(f);
+  });
 
   //Create Componentボタンが押されたときの挙動
   $('#create-component').click(function () {
@@ -287,11 +318,11 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     $(".accordion").accordion({
       heightStyle: "fill"
     });
-    
+
     $(".sortable").sortable({
       revert: true
     });
-    $( "#sortable" ).disableSelection(); //おまけ：テキスト選択を無効にする
+    $("#sortable").disableSelection(); //おまけ：テキスト選択を無効にする
     $("#accordion-resizer").resizable({
       minHeight: 140,
       minWidth: 200,
@@ -338,9 +369,9 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
     console.log(stationeryComponent);
   }
 
-    function iconChangeHander(e) {
+  function iconChangeHander(e) {
     stationeryComponent.attr("image/xlink:href", $("select").data("picker").selected_values());
-    previewComponent.attr("image/xlink:href",  $("select").data("picker").selected_values());
+    previewComponent.attr("image/xlink:href", $("select").data("picker").selected_values());
     console.log(stationeryComponent);
   }
 
@@ -378,7 +409,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
 
   $("#component-name").on("change", nameChangeHander);
   $("[name='inout-type']").on("change", InOutTypeChangeHandler);
-    $("select").on("change", iconChangeHander);
+  $("select").on("change", iconChangeHander);
   //Ace Editor
 
   var editor = ace.edit("editor");
@@ -390,12 +421,13 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager'], function 
 
   //icon選択(image picker) 
   $("select").imagepicker({
-              hide_select : false
+    hide_select: false
   });
   //見栄えが悪いのでプルダウンメニューの削除
   $(".ui-selectmenu-button").remove();
 });
 
- $( function() {
-    $( ".controlgroup" ).controlgroup();
-  } );
+$(function () {
+  $(".controlgroup").controlgroup();
+});
+
