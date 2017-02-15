@@ -5,6 +5,7 @@ define(['IDManager'], function (IDManager) {
         id: 'couple/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 50, y: 50 },
         size: { width: 500, height: 500 },
+        settings: {},
         attrs: {
           '.label': { text: 'Couple' },
           rect: { fill: '#9E1C21' }
@@ -18,7 +19,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
-        throttle: true,
+        settings: { throttle: true },
         attrs: {
           '.label': { text: 'PeriodicScan' },
           rect: { fill: '#2ECC71' },
@@ -34,7 +35,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
-        bufferWithCount: true,
+        settings: { bufferWithCount: true },
         attrs: {
           '.label': { text: 'SlidingWindow' },
           rect: { fill: '#2ECC71' },
@@ -50,6 +51,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'up' },
           rect: { fill: '#2ECC71' },
@@ -66,6 +68,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'down' },
           rect: { fill: '#2ECC71' },
@@ -82,6 +85,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'date' },
           rect: { fill: '#2ECC71' },
@@ -97,6 +101,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'random' },
           rect: { fill: '#2ECC71' },
@@ -112,6 +117,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'multi' },
           rect: { fill: '#2ECC71' },
@@ -129,6 +135,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        settings: {},
         attrs: {
           '.label': { text: 'display' },
           rect: { fill: '#2ECC71' },
@@ -144,6 +151,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'phoneAccel' },
           rect: { fill: '#2ECC71' },
@@ -159,6 +167,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
+        settings: {},
         attrs: {
           '.label': { text: 'accel' },
           rect: { fill: '#2ECC71' },
@@ -176,7 +185,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
-        asynchronous: true,
+        settings: { asynchronous: true },
         attrs: {
           '.label': { text: 'temp' },
           rect: { fill: '#2ECC71' },
@@ -192,7 +201,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
-        asynchronous: true,
+        settings: { asynchronous: true },
         attrs: {
           '.label': { text: 'soundmeter' },
           image: { 'xlink:href': 'icon/Music/microphone-48.png' },
@@ -209,7 +218,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: [],
         outPorts: ['out'],
-        asynchronous: false,
+        settings: {},
         attrs: {
           '.label': { text: 'gps' },
           rect: { fill: '#2ECC71' },
@@ -225,7 +234,8 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
-        combine: true,
+        settings: { combine: true },
+        //this should not use combine type, so modify compcode.#10 combine属性の変更 
         attrs: {
           '.label': { text: 'chartContainer' },
           rect: { fill: '#2ECC71' },
@@ -243,15 +253,16 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
-        combine: true,
-        attrs: {
-          '.label': { text: 'noisemaprealtime' },
-          rect: { fill: '#2ECC71' },
-          '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
-          '.outPorts circle': { fill: '#E74C3C', type: 'output' }
-        }
+        settings: {combine: true},
+          //this should not use combine type, so modify compcode.#10 combine属性の変更 
+          attrs: {
+            '.label': { text: 'noisemaprealtime' },
+            rect: { fill: '#2ECC71' },
+            '.inPorts circle': { fill: '#16A085', magnet: 'passive', type: 'input' },
+            '.outPorts circle': { fill: '#E74C3C', type: 'output' }
+          }
 
-      })
+        })
     },
     combine: function () {
       return new joint.shapes.devs.ComponentModel({
@@ -261,7 +272,7 @@ define(['IDManager'], function (IDManager) {
         z: 0,
         inPorts: ['in'],
         outPorts: ['out'],
-        combine: true,
+        settings: { combine: true },
         attrs: {
           '.label': { text: 'Combine' },
           rect: { fill: '#2ECC71' },
@@ -278,7 +289,8 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
-        combine: true,
+        settings: { combine: true },
+        //this should not use combine type, so modify compcode.#10 combine属性の変更 
         attrs: {
           '.label': { text: 'noisetuberegist' },
           rect: { fill: '#2ECC71' },
@@ -296,7 +308,8 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
-        combine: true,
+        settings: { combine: true },
+        //this should not use combine type, so modify compcode.#10 combine属性の変更 
         attrs: {
           '.label': { text: 'noisemappast' },
           rect: { fill: '#2ECC71' },
@@ -313,8 +326,10 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
-        combine: true,
-        asynchronous: true,
+        //this should not use combine type, so modify compcode.#10 combine属性の変更 
+        settings: {
+          asynchronous: true , combine: true
+        },
         attrs: {
           '.label': { text: 'noisetubeget' },
           rect: { fill: '#2ECC71' },
@@ -331,7 +346,8 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
-        combine: true,
+        settings: {combine:true},
+        //this should not use combine type, so modify compcode.#10 combine属性の変更 
         attrs: {
           '.label': { text: 'boxRangePosition' },
           rect: { fill: '#2ECC71' },
@@ -348,6 +364,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        settings: {},
         attrs: {
           '.label': { text: 'noisePastInformationDisplay' },
           rect: { fill: '#2ECC71' },
@@ -364,6 +381,7 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: [],
+        settings: {},
         attrs: {
           '.label': { text: 'averageNoise' },
           rect: { fill: '#2ECC71' },

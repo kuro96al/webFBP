@@ -15,6 +15,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         width: 80,
                         height: 80
                     },
+                    settings: {},
                     attrs: {
                         '.body': {
                             'rx': 6,
@@ -24,10 +25,6 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                             'ref-y': 100
                         },
                         'image': { 'ref-x': 20, 'ref-y': 20, ref: 'rect', width: 48, height: 48 },
-                        asynchronous: false,
-                        combine: false,
-                        bufferWithCount: false,
-                        throttle:false,
                         rect: {
                             stroke: '#d1d1d1',
                             fill: {
