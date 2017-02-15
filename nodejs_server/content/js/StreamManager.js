@@ -106,10 +106,10 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                         console.log(elementID + "--->" + element.id);
                                     } else {
                                         if (element.attributes.settings.throttle) {
-                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].throttle(compcode[element.id]());
+                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].throttle(element.attributes.settings.scanInterval);
                                             console.log(elementID + "--->" + element.id);
                                         } else if (element.attributes.settings.bufferWithCount) {
-                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].slidingWindow(compcode[element.id](),compcode[element.id]());
+                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].slidingWindow(element.attributes.settings.windowWidth,element.attributes.settings.windowWidth);
                                             console.log(elementID + "--->" + element.id);
                                         } else {
                                             if (!element.attributes.settings.asynchronous) {
@@ -186,10 +186,10 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                             } else {
                                 if (!element.attributes.settings.combine) {
                                     if (element.attributes.settings.throttle) {
-                                        self.allInConnectedElementList[element.id] = mergeFlow.throttle(compcode[element.id]());
+                                        self.allInConnectedElementList[element.id] = mergeFlow.throttle(element.attributes.settings.scanInterval);
                                         console.log("merge throttle flow" + "--->" + element.id);
                                     } else if (element.attributes.settings.bufferWithCount) {
-                                        self.allInConnectedElementList[element.id] = mergeFlow.slidingWindow(compcode[element.id](),compcode[element.id]());
+                                        self.allInConnectedElementList[element.id] = mergeFlow.slidingWindow(element.attributes.settings.windowWidth,element.attributes.settings.windowWidth);
                                         console.log("merge bufferWithCount flow" + "--->" + element.id);
                                     } else {
                                         self.allInConnectedElementList[element.id] = mergeFlow.map(compcode[element.id]);
@@ -197,10 +197,10 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                     }
                                 } else {
                                     if (element.attributes.settings.throttle) {
-                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).throttle(compcode[element.id]());
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).throttle(element.attributes.settings.scanInterval);
                                         console.log("combine throttle flow" + "--->" + element.id);
                                     } else if (element.attributes.settings.bufferWithCount) {
-                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).slidingWindow(compcode[element.id](),compcode[element.id]());
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).slidingWindow(element.attributes.settings.windowWidth,element.attributes.settings.windowWidth);
                                         console.log("combine bufferWithCount flow" + "--->" + element.id);
                                     } else {
                                         console.log("combine" + combineArray.length);

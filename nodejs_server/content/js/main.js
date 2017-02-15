@@ -140,11 +140,12 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
   */
 
   //検証用コード
+  
   var soundmeter = component.soundmeter();
   var gps = component.gps();
   var delay1 = component.delay();
   var delay2 = component.delay();
-  var combine = component.combine();
+  var combine = component.zipwith();
   var noisemaprealtime = component.noisemaprealtime();
   var noisetubeget = component.noisetubeget();
   var noisemappast = component.noisemappast();
@@ -203,6 +204,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
   //graph.addCells([link9, link8]);
   //graph.addCells([link1, link2,link5]);
   graph.addCells([link1, link2, link3, link4, link5, link6, link7, link8, link9, link10, link11]);
+  
   //download flow data 
   $('#download-flow').click(function () {
     console.log(JSON.prune(graph.getCells()));
@@ -318,11 +320,12 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
     $(".accordion").accordion({
       heightStyle: "fill"
     });
-
+/*
     $(".sortable").sortable({
       revert: true
     });
     $("#sortable").disableSelection(); //おまけ：テキスト選択を無効にする
+    */
     $("#accordion-resizer").resizable({
       minHeight: 140,
       minWidth: 200,

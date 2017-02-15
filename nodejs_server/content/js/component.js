@@ -19,7 +19,8 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
-        settings: { throttle: true },
+        settings: { throttle: true ,
+          scanInterval:2000},
         attrs: {
           '.label': { text: 'PeriodicScan' },
           rect: { fill: '#2ECC71' },
@@ -35,7 +36,8 @@ define(['IDManager'], function (IDManager) {
         size: { width: 90, height: 90 },
         inPorts: ['in'],
         outPorts: ['out'],
-        settings: { bufferWithCount: true },
+        settings: { bufferWithCount: true,
+                    windowWidth:10},
         attrs: {
           '.label': { text: 'SlidingWindow' },
           rect: { fill: '#2ECC71' },
@@ -264,9 +266,9 @@ define(['IDManager'], function (IDManager) {
 
         })
     },
-    combine: function () {
+    zipwith: function () {
       return new joint.shapes.devs.ComponentModel({
-        id: 'combine/' + IDManager.generateUUID(),//groupID+UUID
+        id: 'zipwith/' + IDManager.generateUUID(),//groupID+UUID
         position: { x: 300, y: 50 },
         size: { width: 90, height: 90 },
         z: 0,
