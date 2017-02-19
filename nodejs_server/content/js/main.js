@@ -140,7 +140,6 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
   */
 
   //検証用コード
-  
   var soundmeter = component.soundmeter();
   var gps = component.gps();
   var delay1 = component.delay();
@@ -204,7 +203,6 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
   //graph.addCells([link9, link8]);
   //graph.addCells([link1, link2,link5]);
   graph.addCells([link1, link2, link3, link4, link5, link6, link7, link8, link9, link10, link11]);
-  
   //download flow data 
   $('#download-flow').click(function () {
     console.log(JSON.prune(graph.getCells()));
@@ -249,7 +247,7 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
       componentModel.compcode[$("#component-name").val()] = new Function("msg", functionBody);
       component[$("#component-name").val()] = function () { return stationeryComponent };
       console.log(stationeryComponent);
-      $("#userComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' title='1秒ごとに1を出力する'>" + $("#component-name").val() + "</li>");
+      $("#userComponent").append("<li id='" + $('#component-name').val() + "'" + "class='ui-state-default draggableComponent' >" + $("#component-name").val() + "</li>");
       $(".draggableComponent").draggable({
         appendTo: "body",
         helper: "clone",
@@ -320,12 +318,11 @@ require(['component', 'componentModel', 'IDManager', 'StreamManager', 'dnd'], fu
     $(".accordion").accordion({
       heightStyle: "fill"
     });
-/*
+
     $(".sortable").sortable({
       revert: true
     });
     $("#sortable").disableSelection(); //おまけ：テキスト選択を無効にする
-    */
     $("#accordion-resizer").resizable({
       minHeight: 140,
       minWidth: 200,
@@ -437,7 +434,6 @@ $(function () {
 //html editor
 (function(){
 
-$("#html-css-editor").resizable();
 	window.addEventListener('hashchange', function(){
 		location.reload();
 	}, false);
@@ -447,7 +443,7 @@ $("#html-css-editor").resizable();
 
 	// anytime the editor content changes, this is triggered
 	window.addEventListener('message', function(e) {
-
+/*
 		// reference to the preview iframe
 		var preview = window.preview;
 		var previewDoc = preview.document;
@@ -462,8 +458,9 @@ $("#html-css-editor").resizable();
 		// and manually execute them
 
 		var scripts = previewDoc.getElementsByTagName('script')
-
-
+*/
+$("#html-preview").empty();
+$("#html-preview").append(e.data);
 	}, false);
 
 })();

@@ -158,6 +158,9 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                     }
                 },
                 settingToggle: function () {
+                    //settingの表示
+                    $( ".accordion" ).accordion( "option", "active", 4 );
+
                     var self = this;
                     var settings = self.model.attributes.settings;
                     var settingChangeHander = function (e) {

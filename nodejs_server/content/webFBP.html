@@ -27,7 +27,7 @@
 	<div id="tabs">
 		<ul>
 			<li><a href="#tabs-1">Flow Editor</a></li>
-			<li><a href="#tabs-2">Test Place</a></li>
+			<li><a href="#tabs-2">View Editor</a></li>
 			<li><a href="#tabs-3">Component Creator</a></li>
 		</ul>
 		<div id="tabs-1">
@@ -93,7 +93,6 @@
 								<input type="text" id="setting-component-name">
 								<div id="settings-value"></div>
 								<button id="apply-setting" class="ui-state-default">Apply</button>
-								<button id="download-flow" class="ui-state-default">Download Flow</button>
 							</ul>
 						</div>
 					</div>
@@ -101,12 +100,14 @@
 				<div id="droppable">
 					<button id="deploy" class="ui-state-default"> Deploy </button>
 					<div id="myholder"></div>
+				<button id="download-flow" class="ui-state-default"　style="width:10pt;">Download Flow</button>
 				</div>
 			</div>
 		</div>
 		<div id="tabs-2">
 			<iframe name="editor" src="html_css_editor.html"></iframe>
-			<iframe name="preview"></iframe>
+			<!--<iframe name="preview"></iframe>-->
+			<div id="html-preview"></div>
 			<!--
 			<div class="map-left">
 				<fieldset>
@@ -132,42 +133,13 @@
 </fieldset>
 </p>
 -->
-</div>
-<div id="tabs-3">
-	<div class="clearfix">
-		<div id="accordion-resizer-option-create" class="ui-widget-content">
-			<div class="accordion">
-				<h3>Basic Settings</h3>
-				<div>
-
-<<<<<<< HEAD
-					<label for="component-name">Component Name</label>
-					<input type="text" id="component-name">
-
-					<p>
-						<div class="widget">
-							<fieldset>
-								<legend>Component IO Type</legend>
-								<label for="in-out">IN&OUT</label>
-								<input type="radio" name="inout-type" id="in-out">
-								<label for="only-in">OnlyIN</label>
-								<input type="radio" name="inout-type" id="only-in">
-								<label for="only-out">OnlyOUT</label>
-								<input type="radio" name="inout-type" id="only-out">
-							</fieldset>
-						</div>
-					</p>
-					<p>
-						<fieldset>
-							<legend>Preview Component</legend>
-							<div id="previewPaper"></div>
-						</fieldset>
-					</p>
-					<fieldset>
-						<legend>Icon</legend>
-						<div class="controlgroup">
-							<select class="image-picker show-html">
-=======
+		</div>
+		<div id="tabs-3">
+			<div class="clearfix">
+				<div id="accordion-resizer-option-create" class="ui-widget-content">
+					<div class="accordion">
+						<h3>Basic Settings</h3>
+						<div>
 							<label for="component-name" class="ui-state-default">Component Name</label>
 							<input type="text" id="component-name">
 
@@ -194,7 +166,6 @@
 								<legend class="ui-state-default">Icon</legend>
 								<div class="controlgroup">
 									<select class="image-picker show-html">
->>>>>>> origin/master
   									<option value=""></option>
   									<option data-img-src="icon/Music/microphone-48.png" value="icon/Music/microphone-48.png">Cute Kitten 1</option>
  									<option data-img-src="icon/Network/bluetooth-48.png" value="icon/Network/bluetooth-48.png">Cute Kitten 2</option>
@@ -214,15 +185,15 @@
 									<option data-img-src="icon/Science/time-48.png" value="icon/Science/time-48.png">Cute Kitten 3</option>
 									<option data-img-src="icon/Users/user-48.png" value="icon/Users/user-48.png">Cute Kitten 3</option>												 
 								</select>
+								</div>
+							</fieldset>
 						</div>
-					</fieldset>
+						<h3>Advanced Settings</h3>
+						<div>
+						</div>
+					</div>
 				</div>
-				<h3>Advanced Settings</h3>
-				<div>
-				</div>
-			</div>
-		</div>
-		<div style="float:left;">
+				<div style="float:left;">
 <fieldset>
 	<legend class="ui-state-default">Component Editor</legend>
 	<div id="editor"></div>
