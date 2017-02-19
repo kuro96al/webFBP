@@ -104,7 +104,11 @@
 			</div>
 		</div>
 		<div id="tabs-2">
+			<iframe name="editor" src="html_css_editor.html"></iframe>
+			<iframe name="preview"></iframe>
+			<!--
 			<div class="map-left">
+				<fieldset>
 				<legend>リアルタイムデータ</legend>
 				<div id="noisemap-google-realtime" class="noisemap-google"></div>
 				</fieldset>
@@ -118,48 +122,49 @@
 			</div>
 			<p>
 				<fieldset style='float:left'>
-					<legend>過去10件のデータ</legend>
-					<div id="noisemap-past-information"></div>
-				</fieldset>
-				<fieldset style='float:left'>
-					<legend>過去10件のノイズ平均</legend>
-					<div id="noise-average"></div>
-				</fieldset>
-			</p>
-		</div>
-		<div id="tabs-3">
-			<div class="clearfix">
-				<div id="accordion-resizer-option-create" class="ui-widget-content">
-					<div class="accordion">
-						<h3>Basic Settings</h3>
-						<div>
+<legend>過去10件のデータ</legend>
+<div id="noisemap-past-information"></div>
+</fieldset>
+<fieldset style='float:left'>
+<legend>過去10件のノイズ平均</legend>
+<div id="noise-average"></div>
+</fieldset>
+</p>
+-->
+</div>
+<div id="tabs-3">
+	<div class="clearfix">
+		<div id="accordion-resizer-option-create" class="ui-widget-content">
+			<div class="accordion">
+				<h3>Basic Settings</h3>
+				<div>
 
-							<label for="component-name">Component Name</label>
-							<input type="text" id="component-name">
+					<label for="component-name">Component Name</label>
+					<input type="text" id="component-name">
 
-							<p>
-								<div class="widget">
-									<fieldset>
-										<legend>Component IO Type</legend>
-										<label for="in-out">IN&OUT</label>
-										<input type="radio" name="inout-type" id="in-out">
-										<label for="only-in">OnlyIN</label>
-										<input type="radio" name="inout-type" id="only-in">
-										<label for="only-out">OnlyOUT</label>
-										<input type="radio" name="inout-type" id="only-out">
-									</fieldset>
-								</div>
-							</p>
-							<p>
-								<fieldset>
-									<legend>Preview Component</legend>
-									<div id="previewPaper"></div>
-								</fieldset>
-							</p>
+					<p>
+						<div class="widget">
 							<fieldset>
-								<legend>Icon</legend>
-								<div class="controlgroup">
-									<select class="image-picker show-html">
+								<legend>Component IO Type</legend>
+								<label for="in-out">IN&OUT</label>
+								<input type="radio" name="inout-type" id="in-out">
+								<label for="only-in">OnlyIN</label>
+								<input type="radio" name="inout-type" id="only-in">
+								<label for="only-out">OnlyOUT</label>
+								<input type="radio" name="inout-type" id="only-out">
+							</fieldset>
+						</div>
+					</p>
+					<p>
+						<fieldset>
+							<legend>Preview Component</legend>
+							<div id="previewPaper"></div>
+						</fieldset>
+					</p>
+					<fieldset>
+						<legend>Icon</legend>
+						<div class="controlgroup">
+							<select class="image-picker show-html">
   									<option value=""></option>
   									<option data-img-src="icon/Music/microphone-48.png" value="icon/Music/microphone-48.png">Cute Kitten 1</option>
  									<option data-img-src="icon/Network/bluetooth-48.png" value="icon/Network/bluetooth-48.png">Cute Kitten 2</option>
@@ -179,15 +184,15 @@
 									<option data-img-src="icon/Science/time-48.png" value="icon/Science/time-48.png">Cute Kitten 3</option>
 									<option data-img-src="icon/Users/user-48.png" value="icon/Users/user-48.png">Cute Kitten 3</option>												 
 								</select>
-								</div>
-							</fieldset>
 						</div>
-						<h3>Advanced Settings</h3>
-						<div>
-						</div>
-					</div>
+					</fieldset>
 				</div>
-				<div style="float:left;">
+				<h3>Advanced Settings</h3>
+				<div>
+				</div>
+			</div>
+		</div>
+		<div style="float:left;">
 <fieldset>
 	<legend>Component Editor</legend>
 	<div id="editor"></div>

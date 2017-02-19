@@ -431,3 +431,36 @@ $(function () {
   $(".controlgroup").controlgroup();
 });
 
+//html editor
+(function(){
+
+$("#html-css-editor").resizable();
+	window.addEventListener('hashchange', function(){
+		location.reload();
+	}, false);
+
+
+
+
+	// anytime the editor content changes, this is triggered
+	window.addEventListener('message', function(e) {
+
+		// reference to the preview iframe
+		var preview = window.preview;
+		var previewDoc = preview.document;
+
+		// grab the code currently in the editor
+		// and innerHTML it into the preview
+		previewDoc.documentElement.innerHTML = e.data;
+
+		// OK. cool! HTML and CSS work fine, however JS will
+		// not be executed when innerHTML'd
+		// so we have to find all the <script> tags
+		// and manually execute them
+
+		var scripts = previewDoc.getElementsByTagName('script')
+
+
+	}, false);
+
+})();

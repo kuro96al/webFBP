@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<style>
+#html-css-editor {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	font-size: 1em;
+	font-family: "Source Code Pro", "Consolas", "Monaco", "Courier New", monospace;
+}
+</style>
+</head>
+<body>
+
+<div id="html-css-editor"></div>
+
+<textarea id="boilerplate" style="display:none"><!doctype html>
+<html lang="en">
+<head>
+<style>
+body {
+	font-family: sans-serif;
+}
+</style>
+</head>
+<body>
+
+start writin' ur codez...
+
+<script>
+alert('javascript works too');
+</script>
+</body>
+</html></textarea>
+
+	<script src="library/ace/src-min-noconflict/ace.js" type="text/javascript"></script>
+<script>
+
+'use strict';
+
+(function(){
+
+	// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values
+	function getParameterByName(name) {
+		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(parent.location.search);
+		return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+
+	var code = getParameterByName('code');
+
+	if(code){
+		var id = '#' + new Date().getTime();
+		localStorage.setItem(id, code);
+		parent.location = '/' + id;
+		return;
+	}
+
+	// grab the hash from the parent frame
+	var hash = parent.location.hash;
+
+	if(!hash){
+		// no hash. let's set the hash to a timestamp
+		// the hash change will trigger the parent window to reload
+		parent.location.hash = new Date().getTime();
+		return;
+	}
+
+	// use the stored code otherwise start with our simple boilerplate
+	code = localStorage.getItem(hash+'') || document.getElementById('boilerplate').value;
+
+	// fire up ACE
+	var editor = ace.edit('html-css-editor');
+	editor.setTheme('ace/theme/solarized_dark'),
+	editor.getSession().setMode('ace/mode/html');
+	editor.getSession().setTabSize(4);
+	editor.getSession().setUseSoftTabs(true);
+
+	// anytime the editor changes
+	editor.on('change', function(e){
+
+		// grab the code
+		code = editor.getValue();
+
+		// update localstorage
+		localStorage.setItem(hash, code)
+
+		// pass the code to the parent
+		parent.postMessage(code, '*');
+
+	});
+
+	// on load, update the editor with the code
+	editor.setValue(code);
+	editor.clearSelection();
+	editor.focus();
+
+	
+})();
+
+</script>
+
+</body>
+</html>
