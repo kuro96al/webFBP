@@ -39,7 +39,7 @@
 							<ul class="sortable">
 								<li id="couple" class="ui-state-default draggableComponent" title="階層化する">Couple</li>
 								<li id="delay" class="ui-state-default draggableComponent" title="ms遅延させる">PeriodicScan</li>
-								<li id="combine" class="ui-state-default draggableComponent" title="間隔の異なるデータを同期結合する">Combine</li>
+								<li id="zipwith" class="ui-state-default draggableComponent" title="間隔の異なるデータを同期結合する">Combine</li>
 								<li id="slidingWindow" class="ui-state-default draggableComponent" title="任意の数bufferされたらフラッシュする">SlidingWindow</li>
 							</ul>
 						</div>
@@ -89,8 +89,9 @@
 						<div>
 							<ul id="setting-component" class="sortable">
 
-								<label for="setting-component-name">Component Name</label>
+								<label for="setting-component-name" class="ui-state-default">Component Name</label>
 								<input type="text" id="setting-component-name">
+								<div id="settings-value"></div>
 								<button id="apply-setting" class="ui-state-default">Apply</button>
 								<button id="download-flow" class="ui-state-default">Download Flow</button>
 							</ul>
@@ -139,6 +140,7 @@
 				<h3>Basic Settings</h3>
 				<div>
 
+<<<<<<< HEAD
 					<label for="component-name">Component Name</label>
 					<input type="text" id="component-name">
 
@@ -165,6 +167,34 @@
 						<legend>Icon</legend>
 						<div class="controlgroup">
 							<select class="image-picker show-html">
+=======
+							<label for="component-name" class="ui-state-default">Component Name</label>
+							<input type="text" id="component-name">
+
+							<p>
+								<div class="widget">
+									<fieldset>
+										<legend class="ui-state-default">Component IO Type</legend>
+										<label for="in-out">IN&OUT</label>
+										<input type="radio" name="inout-type" id="in-out">
+										<label for="only-in">OnlyIN</label>
+										<input type="radio" name="inout-type" id="only-in">
+										<label for="only-out">OnlyOUT</label>
+										<input type="radio" name="inout-type" id="only-out">
+									</fieldset>
+								</div>
+							</p>
+							<p>
+								<fieldset>
+									<legend class="ui-state-default">Preview Component</legend>
+									<div id="previewPaper"></div>
+								</fieldset>
+							</p>
+							<fieldset>
+								<legend class="ui-state-default">Icon</legend>
+								<div class="controlgroup">
+									<select class="image-picker show-html">
+>>>>>>> origin/master
   									<option value=""></option>
   									<option data-img-src="icon/Music/microphone-48.png" value="icon/Music/microphone-48.png">Cute Kitten 1</option>
  									<option data-img-src="icon/Network/bluetooth-48.png" value="icon/Network/bluetooth-48.png">Cute Kitten 2</option>
@@ -194,13 +224,13 @@
 		</div>
 		<div style="float:left;">
 <fieldset>
-	<legend>Component Editor</legend>
+	<legend class="ui-state-default">Component Editor</legend>
 	<div id="editor"></div>
 	<button id="create-component" class="ui-state-default"> Create Component </button>
 </fieldset>
 <p>
 	<fieldset>
-		<legend>Log</legend>
+		<legend class="ui-state-default">Log</legend>
 		<div id="component_editor_log"></div>
 	</fieldset>
 </p>

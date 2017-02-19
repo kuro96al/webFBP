@@ -15,6 +15,7 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                         width: 80,
                         height: 80
                     },
+                    settings: {},
                     attrs: {
                         '.body': {
                             'rx': 6,
@@ -24,10 +25,6 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                             'ref-y': 100
                         },
                         'image': { 'ref-x': 20, 'ref-y': 20, ref: 'rect', width: 48, height: 48 },
-                        asynchronous: false,
-                        combine: false,
-                        bufferWithCount: false,
-                        throttle:false,
                         rect: {
                             stroke: '#d1d1d1',
                             fill: {
@@ -162,10 +159,40 @@ define(['IDManager', 'compcode'], function (IDManager, compcode) {
                 },
                 settingToggle: function () {
                     var self = this;
+                    var settings = self.model.attributes.settings;
                     var settingChangeHander = function (e) {
                         console.log("this component name is ", self.model.attr('.label/text'));
                         self.model.attr('.label/text', $('#setting-component-name').val());
+
+                         Object.keys(settings).forEach(function (settingKey) {
+                        //整数ならjuery spinnerを使う
+                        if (Number.isInteger(settings[settingKey])) {
+                            console.log(typeof Number($("#" + settingKey).val()));
+                            settings[settingKey] = Number($("#" + settingKey).val());
+                        } else if (typeof (settings[settingKey]) === "boolean") {
+                            console.log(typeof $("#" + settingKey).prop("checked"));
+                            settings[settingKey] = $("#" + settingKey).prop("checked");
+                        } else if(typeof (settings[settingKey]) === "string"){
+                            settings[settingKey] = $("#" + settingKey).val();
+                        }else{
+                            throw new Error("型が対応してないです。");
+                        }
+                    });
                     };
+
+                    console.log(self.model.attributes.settings);
+                    $("#settings-value").empty();
+                    Object.keys(settings).forEach(function (settingKey) {
+                        //整数ならjuery spinnerを使う
+                        if (Number.isInteger(settings[settingKey])) {
+                            $("#settings-value").append('<p><label for="' + settingKey + '" class="ui-state-default">' + settingKey + '<input type="text" value="' + settings[settingKey] + '" id="' + settingKey + '"></label></p>');
+                            $("#" + settingKey).spinner();
+                        } else if (typeof (settings[settingKey]) === "boolean") {
+                            $("#settings-value").append('<p><label for="' + settingKey + '" class="ui-state-default">' + settingKey + '<input type="checkbox" value="' + settings[settingKey] + '" id="' + settingKey + '"></label></p>');
+                          $("#" + settingKey).checkboxradio();
+                          $("#" + settingKey).prop("checked", settings[settingKey]).checkboxradio("refresh");
+                        }
+                    });
                     $('#setting-component-name').val(this.model.attr('.label/text'));
                     $("#apply-setting").off();
                     $("#apply-setting").on("click", settingChangeHander);

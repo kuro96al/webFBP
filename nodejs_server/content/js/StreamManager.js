@@ -73,7 +73,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                 //源流のとき
                 if (typeof element.ports.in === "undefined" && graph.getConnectedLinks(element).length != 0) {
                     console.log(element);
-                    if (element.attributes.asynchronous) {
+                    if (element.attributes.settings.asynchronous) {
                         allInConnectedElementPromiseArray.push(compcode[element.id]().then(function (value) {
                             self.allInConnectedElementList[element.id] = value;
                         })
@@ -105,14 +105,14 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                         self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].onValue(compcode[element.id]);
                                         console.log(elementID + "--->" + element.id);
                                     } else {
-                                        if (element.attributes.throttle) {
-                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].throttle(compcode[element.id]());
+                                        if (element.attributes.settings.throttle) {
+                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].throttle(element.attributes.settings.scanInterval);
                                             console.log(elementID + "--->" + element.id);
-                                        } else if (element.attributes.bufferWithCount) {
-                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].slidingWindow(compcode[element.id](),compcode[element.id]());
+                                        } else if (element.attributes.settings.bufferWithCount) {
+                                            self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].slidingWindow(element.attributes.settings.windowWidth,element.attributes.settings.windowWidth);
                                             console.log(elementID + "--->" + element.id);
                                         } else {
-                                            if (!element.attributes.asynchronous) {
+                                            if (!element.attributes.settings.asynchronous) {
                                                 console.log(elementID);
                                                 self.allInConnectedElementList[element.id] = self.allInConnectedElementList[elementID].map(compcode[element.id]);
                                                 console.log(elementID + "--->" + element.id);
@@ -151,7 +151,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                 Object.keys(self.allInConnectedElementList).forEach(function (elementID) {
                                     if (link.getSourceElement().id == elementID) {
                                         if (mergeFlow == null) {
-                                            if (!element.attributes.combine) {
+                                            if (!element.attributes.settings.combine) {
                                                 mergeFlow = self.allInConnectedElementList[elementID];
                                                 console.log("create mergeFlow: " + elementID);
                                             } else {
@@ -159,7 +159,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                                 console.log("create combineArray: " + elementID);
                                             }
                                         } else {
-                                            if (!element.attributes.combine) {
+                                            if (!element.attributes.settings.combine) {
                                                 mergeFlow = mergeFlow.merge(self.allInConnectedElementList[elementID]);
                                                 console.log("merge: " + elementID)
                                             } else {
@@ -172,7 +172,7 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                 });
                             });
                             if (typeof element.ports.out === "undefined") {
-                                if (!element.attributes.combine) {
+                                if (!element.attributes.settings.combine) {
                                     self.allInConnectedElementList[element.id] = mergeFlow.onValue(compcode[element.id]);
                                     console.log("merged flow" + "--->" + element.id);
                                 } else {
@@ -184,23 +184,23 @@ define(["BasicStreamFunction"], function (BasicStreamFunction) {
                                 }
 
                             } else {
-                                if (!element.attributes.combine) {
-                                    if (element.attributes.throttle) {
-                                        self.allInConnectedElementList[element.id] = mergeFlow.throttle(compcode[element.id]());
+                                if (!element.attributes.settings.combine) {
+                                    if (element.attributes.settings.throttle) {
+                                        self.allInConnectedElementList[element.id] = mergeFlow.throttle(element.attributes.settings.scanInterval);
                                         console.log("merge throttle flow" + "--->" + element.id);
-                                    } else if (element.attributes.bufferWithCount) {
-                                        self.allInConnectedElementList[element.id] = mergeFlow.slidingWindow(compcode[element.id](),compcode[element.id]());
+                                    } else if (element.attributes.settings.bufferWithCount) {
+                                        self.allInConnectedElementList[element.id] = mergeFlow.slidingWindow(element.attributes.settings.windowWidth,element.attributes.settings.windowWidth);
                                         console.log("merge bufferWithCount flow" + "--->" + element.id);
                                     } else {
                                         self.allInConnectedElementList[element.id] = mergeFlow.map(compcode[element.id]);
                                         console.log("merged flow" + "--->" + element.id);
                                     }
                                 } else {
-                                    if (element.attributes.throttle) {
-                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).throttle(compcode[element.id]());
+                                    if (element.attributes.settings.throttle) {
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).throttle(element.attributes.settings.scanInterval);
                                         console.log("combine throttle flow" + "--->" + element.id);
-                                    } else if (element.attributes.bufferWithCount) {
-                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).slidingWindow(compcode[element.id](),compcode[element.id]());
+                                    } else if (element.attributes.settings.bufferWithCount) {
+                                        self.allInConnectedElementList[element.id] = Bacon.zipWith(combineArray, BasicStreamFunction["combine" + combineArray.length]).slidingWindow(element.attributes.settings.windowWidth,element.attributes.settings.windowWidth);
                                         console.log("combine bufferWithCount flow" + "--->" + element.id);
                                     } else {
                                         console.log("combine" + combineArray.length);

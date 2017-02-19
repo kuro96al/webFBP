@@ -370,7 +370,7 @@ define(function (ChartManager) {
                 }, this);
             });
         },
-        combine: function (msg) {
+        zipwith: function (msg) {
             console.log(msg);
             return msg;
         },
